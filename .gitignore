@@ -1,0 +1,5 @@
+# 项目排除路径
+/api-common/target/
+/cherry-blossoms/target/
+/gateway/target/
+/higanbana-sorrow/target/
