@@ -45,7 +45,7 @@ public class AuthorizeFilter implements GlobalFilter {
         ValueOperations<String, Object> ops = redisTemplate.opsForValue();
 
         // 判断是否是登录界面（示例，此处并不是登录的url）
-        if (reqUrlPath.equals("/higanbana/addUser")) {
+        if (reqUrlPath.equals("/higanbana/blog/login") || reqUrlPath.contains("api")) {
             if (ops.get(hostAddress) != null) {
                 ops.increment(hostAddress);
             } else {
@@ -54,7 +54,7 @@ public class AuthorizeFilter implements GlobalFilter {
 
             Integer value = (Integer) ops.get(hostAddress);
             // 当判定为为脚本时
-            if (value >= 10) {
+            if (value >= 100) {
                 ops.set(hostAddress, 9999);
                 exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
                 return exchange.getResponse().setComplete();

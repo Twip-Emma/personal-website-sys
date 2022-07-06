@@ -38,6 +38,12 @@
             <artifactId>spring-boot-starter-amqp</artifactId>
             <version>${rabbit.version}</version>
         </dependency>
+        <!-- 多个数据源 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+            <version>3.3.1</version>
+        </dependency>
 
         <dependency>
             <groupId>mysql</groupId>
