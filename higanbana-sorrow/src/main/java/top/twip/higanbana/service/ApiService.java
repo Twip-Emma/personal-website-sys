@@ -16,33 +16,12 @@ import java.util.List;
 @Service
 @DS("image")
 public class ApiService {
-    @Resource
-    private ImageSetuDaoS1 imageSetuDaoS1;
-    @Resource
-    private ImageSetuDaoS2 imageSetuDaoS2;
-    @Resource
-    private ImageSetuDaoS3 imageSetuDaoS3;
-    @Resource
-    private ImageSetuDaoS4 imageSetuDaoS4;
-    @Resource
-    private ImageSetuDaoS5 imageSetuDaoS5;
-    @Resource
-    private ImageSetuDaoS6 imageSetuDaoS6;
-    @Resource
-    private ImageSetuDaoS7 imageSetuDaoS7;
-    @Resource
-    private ImageSetuDaoS8 imageSetuDaoS8;
-    @Resource
-    private ImageSetuDaoS9 imageSetuDaoS9;
 
     @Resource
     private ImageSetuDao imageSetuDao;
 
     public List<ImageSetu> getOneSetu(){
-//        int i = (int) (Math.random() * 500 + 1);
-//        return imageSetuDaoS1.selectList(new QueryWrapper<ImageSetuS1>().last("limit " + i + ",1;"));
         Integer databaseNum = getRandomNum(1, 9);
-//            Integer databaseNum = 1;
             Integer databaseCount;
             Integer i;
             databaseCount = getDatabaseCount(databaseNum);
@@ -58,17 +37,6 @@ public class ApiService {
 
     //查询某个数据库的表记录数量
     private Integer getDatabaseCount(Integer databaseNum){
-        return switch (databaseNum) {
-            case 1 -> imageSetuDaoS1.selectCount(null);
-            case 2 -> imageSetuDaoS2.selectCount(null);
-            case 3 -> imageSetuDaoS3.selectCount(null);
-            case 4 -> imageSetuDaoS4.selectCount(null);
-            case 5 -> imageSetuDaoS5.selectCount(null);
-            case 6 -> imageSetuDaoS6.selectCount(null);
-            case 7 -> imageSetuDaoS7.selectCount(null);
-            case 8 -> imageSetuDaoS8.selectCount(null);
-            case 9 -> imageSetuDaoS9.selectCount(null);
-            default -> 0;
-        };
+        return imageSetuDao.getCountByDatabaseName(databaseNum,500);
     }
 }

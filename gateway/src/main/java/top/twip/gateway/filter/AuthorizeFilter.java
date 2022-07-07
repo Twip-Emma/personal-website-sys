@@ -45,19 +45,36 @@ public class AuthorizeFilter implements GlobalFilter {
         ValueOperations<String, Object> ops = redisTemplate.opsForValue();
 
         // 判断是否是登录界面（示例，此处并不是登录的url）
-        if (reqUrlPath.equals("/higanbana/blog/login") || reqUrlPath.contains("api")) {
-            if (ops.get(hostAddress) != null) {
-                ops.increment(hostAddress);
-            } else {
-                ops.set(hostAddress, 1, 10, TimeUnit.MINUTES);
-            }
-
-            Integer value = (Integer) ops.get(hostAddress);
-            // 当判定为为脚本时
-            if (value >= 100) {
-                ops.set(hostAddress, 9999);
-                exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
-                return exchange.getResponse().setComplete();
+        if (reqUrlPath.equals("/higanbana/blog/user/login") || reqUrlPath.contains("api")) {
+            if (reqUrlPath.contains("api")){
+                // api请求拦截处理
+                if (ops.get(hostAddress + "api") != null) {
+                    ops.increment(hostAddress + "api");
+                } else {
+                    ops.set(hostAddress + "api", 1, 1, TimeUnit.MINUTES);
+                }
+                System.out.println(hostAddress + "api");
+                Integer value = (Integer) ops.get(hostAddress + "api");
+                // 当判定为：冲太多
+                if (value >= 4) {
+                    ops.set(hostAddress + "api", 9999, 1, TimeUnit.MINUTES);
+                    exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
+                    return exchange.getResponse().setComplete();
+                }
+            }else {
+                // 普通请求拦截处理
+                if (ops.get(hostAddress) != null) {
+                    ops.increment(hostAddress);
+                } else {
+                    ops.set(hostAddress, 1, 10, TimeUnit.MINUTES);
+                }
+                Integer value = (Integer) ops.get(hostAddress);
+                // 当判定为为脚本时
+                if (value >= 100) {
+                    ops.set(hostAddress, 9999);
+                    exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
+                    return exchange.getResponse().setComplete();
+                }
             }
             return chain.filter(exchange);
         }else{

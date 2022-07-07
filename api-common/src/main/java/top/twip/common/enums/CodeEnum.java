@@ -14,7 +14,7 @@ public enum CodeEnum {
     BAD_REQUEST(400), // 服务器无法解析该请求
 
     // 自定义状态码
-    NOT_ALL_OK(201), // 成功了，但是不符合要求
+    NOT_ALL_OK(1204), // 成功了，但是不符合要求
     TOKEN_EXPIRED(1001), // 自定义：TOKEN过期
     USER_HANDLE_ERROR(1002); // 自定义：用户操作失误
 

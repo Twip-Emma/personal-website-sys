@@ -17,4 +17,9 @@ public interface ImageSetuDao extends BaseMapper<ImageSetu> {
     @Select("select * from image_s_#{databaseNum}_500 limit #{index},1;")
     List<ImageSetu> userGetOneSetuByIndex(@Param("databaseNum")Integer databaseNum,
                                           @Param("index")Integer index);
+
+    // 查询指定仓库的记录数量（s仓库）
+    @Select("select count(*) from image_s_#{databaseNum}_#{databaseTotal}")
+    Integer getCountByDatabaseName(@Param("databaseNum")Integer databaseNum,
+                                   @Param("databaseTotal")Integer databaseTotal);
 }
