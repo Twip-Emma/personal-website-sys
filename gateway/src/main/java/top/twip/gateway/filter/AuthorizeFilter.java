@@ -49,18 +49,17 @@ public class AuthorizeFilter implements GlobalFilter {
             if (reqUrlPath.contains("api")){
                 // api请求拦截处理
                 if (ops.get(hostAddress + "api") != null) {
-                    ops.increment(hostAddress + "api");
+                    Long value = ops.increment(hostAddress + "api");
+                    // 当判定为：冲太多
+                    if (value >= 4) {
+                        ops.set(hostAddress + "api", 9999, 1, TimeUnit.MINUTES);
+                        exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
+                        return exchange.getResponse().setComplete();
+                    }
                 } else {
                     ops.set(hostAddress + "api", 1, 1, TimeUnit.MINUTES);
                 }
                 System.out.println(hostAddress + "api");
-                Integer value = (Integer) ops.get(hostAddress + "api");
-                // 当判定为：冲太多
-                if (value >= 4) {
-                    ops.set(hostAddress + "api", 9999, 1, TimeUnit.MINUTES);
-                    exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
-                    return exchange.getResponse().setComplete();
-                }
             }else {
                 // 普通请求拦截处理
                 if (ops.get(hostAddress) != null) {

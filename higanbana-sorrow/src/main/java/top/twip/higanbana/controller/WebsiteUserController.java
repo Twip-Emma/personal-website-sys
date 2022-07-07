@@ -5,9 +5,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.twip.common.entity.user.UserInfo;
+import top.twip.common.entity.user.WebsiteUserInfo;
 import top.twip.common.response.DataFactory;
 import top.twip.common.response.SimpleData;
+import top.twip.higanbana.service.WebsiteSingleUserService;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -17,9 +20,17 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/higanbana/blog/user")
 public class WebsiteUserController {
+
+    @Resource
+    private WebsiteSingleUserService websiteSingleUserService;
+
     @PostMapping("/login")
-    public Object login(@RequestBody UserInfo userInfo,
-                        HttpServletRequest request){
-        return DataFactory.success(SimpleData.class, "登录成功力").parseData(userInfo);
+    public Object login(@RequestBody WebsiteUserInfo websiteUserInfo,
+                        HttpServletRequest request) throws Exception{
+        return DataFactory.success(SimpleData.class, "登录成功力")
+                .parseData(websiteSingleUserService.userLogin(
+                        websiteUserInfo.getCard(),
+                        websiteUserInfo.getPass()
+                ));
     }
 }

@@ -48,11 +48,17 @@
             <version>4.0.1</version>
             <scope>provided</scope>
         </dependency>
-        <!-- 加密 -->
+        <!-- 加密（不可逆） -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
+        </dependency>
+        <!-- 加密（可逆）-->
+        <dependency>
+            <groupId>javax.xml.rpc</groupId>
+            <artifactId>javax.xml.rpc-api</artifactId>
+            <version>1.1.1</version>
         </dependency>
     </dependencies>
 

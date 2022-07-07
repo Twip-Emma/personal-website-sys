@@ -16,20 +16,27 @@ import javax.annotation.Resource;
 @Service
 public class WebsiteSingleUserService {
     @Resource
-    private WebsiteUserInfoDao userInfoDao;
+    private WebsiteUserInfoDao websiteUserInfoDao;
 
     @Resource
     private BCryptHandler bCryptHandler;
 
     public WebsiteUserInfo userLogin(String card,String pass) throws Exception{
-        WebsiteUserInfo one = userInfoDao.selectOne(new QueryWrapper<WebsiteUserInfo>()
+        WebsiteUserInfo one = websiteUserInfoDao.selectOne(new QueryWrapper<WebsiteUserInfo>()
                 .eq("card", card));
         if (one == null){
             throw new BadRequestDataException("用户不存在，请注册");
         }
 
         // 判断用户密码是否正确
-        Boolean a = bCryptHandler.ciphertextToPlaintext(card, pass);
+//        Boolean a = bCryptHandler.ciphertextToPlaintext(card, pass);
+        Boolean a;
+        if (pass.equals(one.getPass())){
+            a = true;
+        }else{
+            a = false;
+        }
+
         if (!a){
             throw new BadRequestDataException("密码错误，请重试");
         }else {

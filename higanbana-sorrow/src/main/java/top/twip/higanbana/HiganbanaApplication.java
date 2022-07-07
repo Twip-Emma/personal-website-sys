@@ -13,7 +13,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
  */
 @MapperScan("top.twip.higanbana.dao")
 @EnableFeignClients(basePackages = "top.twip.common.feign")
-@SpringBootApplication(scanBasePackages = {"top.twip.higanbana","top.twip.common.globalconfig"})
+@SpringBootApplication(scanBasePackages = {"top.twip.higanbana","top.twip.common.globalconfig","top.twip.common.util"})
 public class HiganbanaApplication {
     public static void main(String[] args) {
         SpringApplication.run(HiganbanaApplication.class, args);

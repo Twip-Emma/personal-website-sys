@@ -1,7 +1,6 @@
 package top.twip.higanbana.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import top.twip.common.entity.user.UserInfo;
 import top.twip.common.exception.BadRequestDataException;
