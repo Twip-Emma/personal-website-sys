@@ -1,9 +1,6 @@
 package top.twip.higanbana.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import top.twip.common.entity.user.UserInfo;
 import top.twip.common.entity.user.WebsiteUserInfo;
 import top.twip.common.response.DataFactory;
@@ -24,6 +21,7 @@ public class WebsiteUserController {
     @Resource
     private WebsiteSingleUserService websiteSingleUserService;
 
+    // 用户登录
     @PostMapping("/login")
     public Object login(@RequestBody WebsiteUserInfo websiteUserInfo,
                         HttpServletRequest request) throws Exception{
@@ -32,5 +30,25 @@ public class WebsiteUserController {
                         websiteUserInfo.getCard(),
                         websiteUserInfo.getPass()
                 ));
+    }
+
+
+    @PostMapping("/register")
+    public Object register(@RequestBody WebsiteUserInfo websiteUserInfo,
+                           HttpServletRequest request) throws Exception{
+        System.out.println(websiteUserInfo);
+        return DataFactory.success(SimpleData.class, "注册成功")
+                .parseData(websiteSingleUserService.userRegister(
+                        websiteUserInfo.getNickname(),
+                        websiteUserInfo.getCard(),
+                        websiteUserInfo.getPass()
+                ));
+    }
+
+    // 根据用户ID查询这个用户实体
+    @GetMapping("/getbyid")
+    public Object getWebsiteUserById(@RequestParam("userid")String userId,
+                                     HttpServletRequest request)throws Exception{
+        return null;
     }
 }

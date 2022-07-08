@@ -21,8 +21,8 @@ public class WebsiteUserInfo {
     private Integer isadmin;
 
     @TableField(fill = FieldFill.INSERT)
-    private Integer ctime;
+    private Long ctime;
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Integer mtime;
+    private Long mtime;
 }

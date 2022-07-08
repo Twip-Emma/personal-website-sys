@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class BCryptHandler {
-    static final private String SALT = "boynextdoor";
+    static final private String SALT = BCrypt.gensalt(10);
 
     // 明文转密文
     public String plaintextToCiphertext(String plaintext){
-        return BCrypt.hashpw(plaintext,SALT);
+        return BCrypt.hashpw(plaintext, SALT);
     }
 
     // 明文与密文做对比

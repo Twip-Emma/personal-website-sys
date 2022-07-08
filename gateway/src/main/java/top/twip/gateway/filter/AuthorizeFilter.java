@@ -14,6 +14,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import top.twip.common.constant.CurrencyConstants;
 import top.twip.common.constant.FeignConstants;
+import top.twip.common.constant.NoValueConstants;
 
 import javax.annotation.Resource;
 import java.util.Objects;
@@ -41,11 +42,17 @@ public class AuthorizeFilter implements GlobalFilter {
         // 获取ip地址
         String hostAddress = request.getRemoteAddress().getAddress().getHostAddress();
 
+        // 获取token和索引
+        String token = request.getHeaders().getFirst(NoValueConstants.TOKEN_HEADER);
+        String card = request.getHeaders().getFirst(NoValueConstants.INDEX);
+
         // redis查询
         ValueOperations<String, Object> ops = redisTemplate.opsForValue();
 
         // 判断是否是登录界面（示例，此处并不是登录的url）
-        if (reqUrlPath.equals("/higanbana/blog/user/login") || reqUrlPath.contains("api")) {
+        if (reqUrlPath.equals("/higanbana/blog/user/login")
+                || reqUrlPath.contains("api")
+                || reqUrlPath.equals("/higanbana/blog/user/register")) {
             if (reqUrlPath.contains("api")){
                 // api请求拦截处理
                 if (ops.get(hostAddress + "api") != null) {
@@ -89,4 +96,7 @@ public class AuthorizeFilter implements GlobalFilter {
         }
         return exchange.getResponse().setComplete();
     }
+
+    //根据索引验证token是否合法
+
 }

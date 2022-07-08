@@ -1,8 +1,6 @@
 package top.twip.common.entity.blog;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 /**
@@ -23,9 +21,11 @@ public class WebsiteBlogList {
     private Integer views;
     private Integer appreciation;
 
-    private Integer ctime;
+    @TableField(fill = FieldFill.INSERT)
+    private Long ctime;
 
-    private Integer mtime;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Long mtime;
 
     private String description;
     private Integer typeId;
