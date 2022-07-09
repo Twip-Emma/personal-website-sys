@@ -2,6 +2,7 @@ package top.twip.common.entity.blog;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import top.twip.common.entity.user.WebsiteUserInfo;
 
 /**
  * @Author: 七画一只妖
@@ -10,7 +11,7 @@ import lombok.Data;
 @Data
 @TableName("website_blog_list")
 public class WebsiteBlogList {
-    @TableId(value = "user_id",type = IdType.ASSIGN_ID)
+    @TableId(value = "id",type = IdType.ASSIGN_ID)
     private String id;
 
     private String title;
@@ -37,4 +38,7 @@ public class WebsiteBlogList {
     private String userId;
     private String comments;
     private String tagIds;
+
+    @TableField(exist = false)
+    private WebsiteUserInfo user;
 }

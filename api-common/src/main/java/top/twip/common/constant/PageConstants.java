@@ -6,5 +6,5 @@ package top.twip.common.constant;
  */
 public class PageConstants {
     // 博客列表每页大小
-    public final static Integer BlogListPageTotal = 10;
+    public final static Integer BlogListPageTotal = 3;
 }
