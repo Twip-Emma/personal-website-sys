@@ -35,4 +35,11 @@ public class WebsiteBlogController {
         return DataFactory.success(SimpleData.class, "查询成功")
                 .parseData(websiteSingleBlogService.getBlogTotalCount());
     }
+
+    @GetMapping("/selectblogreplybyid")
+    public Object getBlogReplyById(@RequestParam("blogid")String blogId,
+                                   HttpServletRequest request) throws Exception{
+        return DataFactory.success(SimpleData.class, "查询成功")
+                .parseData(websiteSingleBlogService.getReplyListById(blogId));
+    }
 }
