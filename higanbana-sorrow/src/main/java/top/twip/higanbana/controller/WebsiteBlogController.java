@@ -1,9 +1,7 @@
 package top.twip.higanbana.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import top.twip.common.entity.blog.WebsiteBlogReplyEntity;
 import top.twip.common.response.DataFactory;
 import top.twip.common.response.SimpleData;
 import top.twip.higanbana.service.WebsiteSingleBlogService;
@@ -41,5 +39,12 @@ public class WebsiteBlogController {
                                    HttpServletRequest request) throws Exception{
         return DataFactory.success(SimpleData.class, "查询成功")
                 .parseData(websiteSingleBlogService.getReplyListById(blogId));
+    }
+
+    @PostMapping("/addblogreply")
+    public Object addBlogReply(@RequestBody WebsiteBlogReplyEntity websiteBlogReplyEntity,
+                               HttpServletRequest request) throws Exception{
+        return DataFactory.success(SimpleData.class, "新增成功")
+                .parseData(websiteSingleBlogService.addReply(websiteBlogReplyEntity));
     }
 }

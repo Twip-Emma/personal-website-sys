@@ -39,7 +39,7 @@
         <naocs.version>2.2.5.RELEASE</naocs.version>
         <mybatis-plus.version>3.4.2</mybatis-plus.version>
         <fastjson.version>1.2.71</fastjson.version>
-        <rabbit.version>2.3.9.RELEASE</rabbit.version>
+<!--        <rabbit.version>2.3.9.RELEASE</rabbit.version>-->
         <seata.version>1.4.2</seata.version>
         <redis.version>2.3.9.RELEASE</redis.version>
         <feign.version>2.2.7.RELEASE</feign.version>

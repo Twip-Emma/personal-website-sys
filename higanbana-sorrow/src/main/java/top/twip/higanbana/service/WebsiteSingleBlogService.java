@@ -2,11 +2,13 @@ package top.twip.higanbana.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.val;
 import org.springframework.stereotype.Service;
 import top.twip.common.constant.PageConstants;
 import top.twip.common.entity.blog.WebsiteBlogList;
 import top.twip.common.entity.blog.WebsiteBlogReplyEntity;
 import top.twip.common.entity.user.WebsiteUserInfo;
+import top.twip.common.exception.DatabaseHandlerException;
 import top.twip.higanbana.dao.WebsiteBlogListDao;
 import top.twip.higanbana.dao.WebsiteBlogReplyEntityDao;
 import top.twip.higanbana.dao.WebsiteUserInfoDao;
@@ -66,5 +68,14 @@ public class WebsiteSingleBlogService {
             resp.add(o);
         }
         return resp;
+    }
+
+    // 发表博客评论
+    public WebsiteBlogReplyEntity addReply(WebsiteBlogReplyEntity input) throws Exception{
+        int i = websiteBlogReplyEntityDao.insert(input);
+        if(i != 1){
+            throw new DatabaseHandlerException("数据库执行插入的时候出现错误力");
+        }
+        return input;
     }
 }
