@@ -7,10 +7,12 @@ import org.springframework.stereotype.Service;
 import top.twip.common.constant.PageConstants;
 import top.twip.common.entity.blog.WebsiteBlogList;
 import top.twip.common.entity.blog.WebsiteBlogReplyEntity;
+import top.twip.common.entity.blog.WebsiteMessageEntity;
 import top.twip.common.entity.user.WebsiteUserInfo;
 import top.twip.common.exception.DatabaseHandlerException;
 import top.twip.higanbana.dao.WebsiteBlogListDao;
 import top.twip.higanbana.dao.WebsiteBlogReplyEntityDao;
+import top.twip.higanbana.dao.WebsiteMessageEntityDao;
 import top.twip.higanbana.dao.WebsiteUserInfoDao;
 
 import javax.annotation.Resource;
@@ -33,6 +35,8 @@ public class WebsiteSingleBlogService {
 
     @Resource
     private WebsiteBlogReplyEntityDao websiteBlogReplyEntityDao;
+
+
 
     // 获取博客列表、分页查询
     public List<WebsiteBlogList> getBlogListByPage(Integer page){
@@ -72,6 +76,11 @@ public class WebsiteSingleBlogService {
 
     // 发表博客评论
     public WebsiteBlogReplyEntity addReply(WebsiteBlogReplyEntity input) throws Exception{
+
+//        WebsiteBlogReplyEntity reply = new WebsiteBlogReplyEntity();
+//        reply.setContent(input.getContent());
+//        reply.setArticleId(input.getArticleId());
+//        reply.setUserId(input.getUserId());
         int i = websiteBlogReplyEntityDao.insert(input);
         if(i != 1){
             throw new DatabaseHandlerException("数据库执行插入的时候出现错误力");
