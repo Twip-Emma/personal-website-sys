@@ -6,6 +6,7 @@ import top.twip.common.entity.user.WebsiteUserInfo;
 import top.twip.common.exception.BadRequestDataException;
 import top.twip.common.exception.DatabaseHandlerException;
 import top.twip.common.util.BCryptHandler;
+import top.twip.common.util.TokenHandler;
 import top.twip.higanbana.dao.WebsiteUserInfoDao;
 
 import javax.annotation.Resource;
@@ -22,6 +23,9 @@ public class WebsiteSingleUserService {
     @Resource
     private BCryptHandler bCryptHandler;
 
+    @Resource
+    private TokenHandler tokenHandler;
+
     public WebsiteUserInfo userLogin(String card,String pass) throws Exception{
         WebsiteUserInfo one = websiteUserInfoDao.selectOne(new QueryWrapper<WebsiteUserInfo>()
                 .eq("card", card));
@@ -34,7 +38,8 @@ public class WebsiteSingleUserService {
         if (!a){
             throw new BadRequestDataException("密码错误，请重试");
         }else {
-            one.setPass("xxx");
+            one.setToken(tokenHandler.getToken(one));
+            one.setPass(null);
             return one;
         }
     }
@@ -65,7 +70,8 @@ public class WebsiteSingleUserService {
         if(one == null){
             throw new DatabaseHandlerException("数据库执行插入的时候出现错误力");
         }
-        one.setPass("xxx");
+        one.setToken(tokenHandler.getToken(one));
+        one.setPass(null);
         return one;
     }
 }

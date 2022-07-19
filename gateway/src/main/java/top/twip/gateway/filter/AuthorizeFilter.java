@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import top.twip.common.constant.CurrencyConstants;
 import top.twip.common.constant.FeignConstants;
 import top.twip.common.constant.NoValueConstants;
+import top.twip.common.util.TokenHandler;
 
 import javax.annotation.Resource;
 import java.util.Objects;
@@ -31,6 +32,9 @@ public class AuthorizeFilter implements GlobalFilter {
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
+    @Resource
+    private TokenHandler tokenHandler;
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain){
 
@@ -43,14 +47,10 @@ public class AuthorizeFilter implements GlobalFilter {
         // 获取ip地址
         String hostAddress = request.getRemoteAddress().getAddress().getHostAddress();
 
-        // 获取token和索引
-        String token = request.getHeaders().getFirst(NoValueConstants.TOKEN_HEADER);
-        String card = request.getHeaders().getFirst(NoValueConstants.INDEX);
-
         // redis查询
         ValueOperations<String, Object> ops = redisTemplate.opsForValue();
 
-        // 判断是否是登录界面（示例，此处并不是登录的url）
+        // 判断是否是登录界面
         if (reqUrlPath.equals("/higanbana/blog/user/login")
                 || reqUrlPath.contains("api")
                 || reqUrlPath.equals("/higanbana/blog/user/register")) {
@@ -85,19 +85,15 @@ public class AuthorizeFilter implements GlobalFilter {
             }
             return chain.filter(exchange);
         }else{
-            // 判断请求头是否合法
-            if (!Objects.equals(
-                    request.getHeaders().getFirst(CurrencyConstants.CURRENCY_HEADER_NAME.getValue()),
-                    CurrencyConstants.CURRENCY_HEADER_VALUE.getValue()
-            )){
-                exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
-            }else{
+            // 不是登录/注册页面
+            try{
+                tokenHandler.checkToken(request.getHeaders().getFirst(CurrencyConstants.CURRENCY_HEADER_NAME.getValue()));
+//                Integer a = 1 + 1;
                 return chain.filter(exchange);
+            } catch (Exception e){
+                exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
             }
         }
         return exchange.getResponse().setComplete();
     }
-
-    //根据索引验证token是否合法
-
 }

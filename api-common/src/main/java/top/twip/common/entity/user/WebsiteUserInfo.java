@@ -25,4 +25,7 @@ public class WebsiteUserInfo {
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long mtime;
+
+    @TableField(exist = false)
+    private String token;
 }

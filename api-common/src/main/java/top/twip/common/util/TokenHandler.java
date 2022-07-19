@@ -1,7 +1,10 @@
 package top.twip.common.util;
 
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import io.jsonwebtoken.*;
 import org.springframework.stereotype.Component;
+import top.twip.common.entity.user.WebsiteUserInfo;
+
+import java.util.Date;
 
 /**
  * @Author: 七画一只妖
@@ -9,41 +12,33 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class TokenHandler {
-    static final private String SALT = "keysafe";
+    private static final Integer TOKEN_TIME = 1000*60*60*3; // 有效时间3小时
 
-    /**
-     * 获取token
-     * @param id 用户id
-     * @param card 用户账号
-     * @param pass 用户密码
-     * @return String token
-     */
-    public String getToken(String id,String card,String pass){
-        String totalString = id + "|" + card + "|" + pass;
-        return plaintextToCiphertext(totalString);
+    private static final String SIGN = "user";
+
+    // 获取token
+    public String getToken(WebsiteUserInfo userInfo){
+        JwtBuilder builder = Jwts.builder();
+        return builder
+                // 头信息
+                .setHeaderParam("typ", "JWT")
+                .setHeaderParam("alg", "HS256")
+                // 载荷
+                .claim("card", userInfo.getCard())
+                .claim("pass", userInfo.getPass())
+                .setSubject("user-info")
+                .setExpiration(new Date(System.currentTimeMillis() + TOKEN_TIME))
+                // 签名
+                .signWith(SignatureAlgorithm.HS256, SIGN)
+                .compact();
     }
 
-
-    /**
-     * 验证token是否合法
-     * @param token token
-     * @param id 用户id
-     * @param card 用户账号
-     * @param pass 用户密码
-     * @return Boolean Boolean
-     */
-    public Boolean checkToken(String token, String id, String card, String pass){
-        String totalString = id + "|" + card + "|" + pass;
-        return ciphertextToPlaintext(totalString, token);
-    }
-
-    // 明文转密文
-    private String plaintextToCiphertext(String plaintext){
-        return BCrypt.hashpw(plaintext,SALT);
-    }
-
-    // 明文与密文做对比
-    private Boolean ciphertextToPlaintext(String plaintext, String ciphertext){
-        return BCrypt.checkpw(plaintext,ciphertext);
+    // 解析token
+    public void checkToken(String token){
+        JwtParser parser = Jwts.parser();
+        Jws<Claims> claimsJws = parser.setSigningKey("user").parseClaimsJws(token);
+        Claims claims = claimsJws.getBody();
+        claims.get("card");
+        claims.get("pass");
     }
 }
