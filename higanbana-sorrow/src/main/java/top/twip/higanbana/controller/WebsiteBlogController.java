@@ -47,4 +47,11 @@ public class WebsiteBlogController {
         return DataFactory.success(SimpleData.class, "新增成功")
                 .parseData(websiteSingleBlogService.addReply(websiteBlogReplyEntity));
     }
+
+    @GetMapping("/getbloginfobyid")
+    public Object getBlogInfoById(@RequestParam("blogid")String blogId,
+                                  HttpServletRequest request) throws Exception{
+        return DataFactory.success(SimpleData.class, "查询成功")
+                .parseData(websiteSingleBlogService.getBlogById(blogId));
+    }
 }

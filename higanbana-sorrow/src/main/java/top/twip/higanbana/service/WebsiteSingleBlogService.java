@@ -9,6 +9,7 @@ import top.twip.common.entity.blog.WebsiteBlogList;
 import top.twip.common.entity.blog.WebsiteBlogReplyEntity;
 import top.twip.common.entity.blog.WebsiteMessageEntity;
 import top.twip.common.entity.user.WebsiteUserInfo;
+import top.twip.common.exception.DatabaseDataNotFound;
 import top.twip.common.exception.DatabaseHandlerException;
 import top.twip.higanbana.dao.WebsiteBlogListDao;
 import top.twip.higanbana.dao.WebsiteBlogReplyEntityDao;
@@ -72,6 +73,17 @@ public class WebsiteSingleBlogService {
             resp.add(o);
         }
         return resp;
+    }
+
+    // 根据ID获取博客内容
+    public WebsiteBlogList getBlogById(String id) throws Exception{
+        WebsiteBlogList blog = websiteBlogListDao.selectById(id);
+        if(blog == null){
+            throw new DatabaseDataNotFound("数据未找到");
+        }
+        WebsiteUserInfo websiteUserInfo = websiteUserInfoDao.selectById(blog.getUserId());
+        blog.setUser(websiteUserInfo);
+        return blog;
     }
 
     // 发表博客评论
