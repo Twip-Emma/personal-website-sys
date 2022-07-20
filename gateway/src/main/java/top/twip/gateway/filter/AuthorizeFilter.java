@@ -59,13 +59,13 @@ public class AuthorizeFilter implements GlobalFilter {
                 if (ops.get(hostAddress + "api") != null) {
                     Long value = ops.increment(hostAddress + "api");
                     // 当判定为：冲太多
-                    if (value >= 4) {
-                        ops.set(hostAddress + "api", 9999, 1, TimeUnit.MINUTES);
+                    if (value >= 3) {
+                        ops.set(hostAddress + "api", 9999, 2, TimeUnit.MINUTES);
                         exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
                         return exchange.getResponse().setComplete();
                     }
                 } else {
-                    ops.set(hostAddress + "api", 1, 1, TimeUnit.MINUTES);
+                    ops.set(hostAddress + "api", 1, 2, TimeUnit.MINUTES);
                 }
                 System.out.println(hostAddress + "api");
             }else {
@@ -78,7 +78,7 @@ public class AuthorizeFilter implements GlobalFilter {
                 Integer value = (Integer) ops.get(hostAddress);
                 // 当判定为为脚本时
                 if (value >= 100) {
-                    ops.set(hostAddress, 9999);
+                    ops.set(hostAddress, 9999, 10, TimeUnit.MINUTES);
                     exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
                     return exchange.getResponse().setComplete();
                 }
