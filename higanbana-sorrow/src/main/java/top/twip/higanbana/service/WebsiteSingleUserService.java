@@ -2,14 +2,18 @@ package top.twip.higanbana.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.stereotype.Service;
+import top.twip.common.entity.user.WebsiteAvatarEntity;
 import top.twip.common.entity.user.WebsiteUserInfo;
 import top.twip.common.exception.BadRequestDataException;
+import top.twip.common.exception.DatabaseDataNotFound;
 import top.twip.common.exception.DatabaseHandlerException;
 import top.twip.common.util.BCryptHandler;
 import top.twip.common.util.TokenHandler;
+import top.twip.higanbana.dao.WebsiteAvatarDao;
 import top.twip.higanbana.dao.WebsiteUserInfoDao;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Author: 七画一只妖
@@ -19,6 +23,9 @@ import javax.annotation.Resource;
 public class WebsiteSingleUserService {
     @Resource
     private WebsiteUserInfoDao websiteUserInfoDao;
+
+    @Resource
+    private WebsiteAvatarDao websiteAvatarDao;
 
     @Resource
     private BCryptHandler bCryptHandler;
@@ -73,5 +80,29 @@ public class WebsiteSingleUserService {
         one.setToken(tokenHandler.getToken(one));
         one.setPass(null);
         return one;
+    }
+
+    //修改用户
+    public WebsiteUserInfo updateUser(WebsiteUserInfo user) throws Exception{
+        WebsiteUserInfo byId = websiteUserInfoDao.selectById(user.getId());
+        if (byId == null){
+            throw new DatabaseDataNotFound("数据未找到");
+        }
+        int i = websiteUserInfoDao.updateById(user);
+        if (i != 1){
+            throw new DatabaseHandlerException("数据库执行修改操作失败了");
+        }
+        byId = websiteUserInfoDao.selectById(user.getId());
+        byId.setPass(null);
+        return byId;
+    }
+
+    // 查询所有头像
+    public List<WebsiteAvatarEntity> getAllAvatar() throws Exception{
+        try {
+            return websiteAvatarDao.selectList(null);
+        } catch (Exception e){
+            throw new DatabaseHandlerException("数据库查询的时候出错力");
+        }
     }
 }

@@ -36,7 +36,6 @@ public class WebsiteUserController {
     @PostMapping("/register")
     public Object register(@RequestBody WebsiteUserInfo websiteUserInfo,
                            HttpServletRequest request) throws Exception{
-        System.out.println(websiteUserInfo);
         return DataFactory.success(SimpleData.class, "注册成功")
                 .parseData(websiteSingleUserService.userRegister(
                         websiteUserInfo.getNickname(),
@@ -45,10 +44,25 @@ public class WebsiteUserController {
                 ));
     }
 
+
+    @PostMapping("updateuser")
+    public Object updateUser(@RequestBody WebsiteUserInfo websiteUserInfo,
+                           HttpServletRequest request) throws Exception{
+        return DataFactory.success(SimpleData.class, "注册成功")
+                .parseData(websiteSingleUserService.updateUser(websiteUserInfo));
+    }
+
     // 根据用户ID查询这个用户实体
     @GetMapping("/getbyid")
     public Object getWebsiteUserById(@RequestParam("userid")String userId,
                                      HttpServletRequest request)throws Exception{
         return null;
+    }
+
+    // 查询所有头像
+    @GetMapping("getallavatar")
+    public Object getAllAvatar()throws Exception{
+        return DataFactory.success(SimpleData.class, "查询成功")
+                .parseData(websiteSingleUserService.getAllAvatar());
     }
 }

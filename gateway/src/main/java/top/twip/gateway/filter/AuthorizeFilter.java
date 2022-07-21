@@ -46,6 +46,8 @@ public class AuthorizeFilter implements GlobalFilter {
         System.out.println(reqUrlPath);
         // 获取ip地址
         String hostAddress = request.getRemoteAddress().getAddress().getHostAddress();
+        // 代替ip地址以token作为脚本判断依据
+        String token = request.getHeaders().getFirst(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
 
         // redis查询
         ValueOperations<String, Object> ops = redisTemplate.opsForValue();
@@ -54,40 +56,48 @@ public class AuthorizeFilter implements GlobalFilter {
         if (reqUrlPath.equals("/higanbana/blog/user/login")
                 || reqUrlPath.contains("api")
                 || reqUrlPath.equals("/higanbana/blog/user/register")) {
-            if (reqUrlPath.contains("api")){
+            if (reqUrlPath.contains("api")) {
+                // 先验证token是否合法
+                try{
+                    tokenHandler.checkToken(token);
+                } catch (Exception e){
+                    exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
+                    return exchange.getResponse().setComplete();
+                }
                 // api请求拦截处理
-                if (ops.get(hostAddress + "api") != null) {
-                    Long value = ops.increment(hostAddress + "api");
+                if (ops.get(token + "api") != null) {
+                    Long value = ops.increment(token + "api");
                     // 当判定为：冲太多
                     if (value >= 3) {
-                        ops.set(hostAddress + "api", 9999, 2, TimeUnit.MINUTES);
+                        ops.set(token + "api", 9999, 2, TimeUnit.MINUTES);
                         exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
                         return exchange.getResponse().setComplete();
                     }
                 } else {
-                    ops.set(hostAddress + "api", 1, 2, TimeUnit.MINUTES);
+                    ops.set(token + "api", 1, 2, TimeUnit.MINUTES);
                 }
-                System.out.println(hostAddress + "api");
-            }else {
-                // 普通请求拦截处理
-                if (ops.get(hostAddress) != null) {
-                    ops.increment(hostAddress);
-                } else {
-                    ops.set(hostAddress, 1, 10, TimeUnit.MINUTES);
-                }
-                Integer value = (Integer) ops.get(hostAddress);
-                // 当判定为为脚本时
-                if (value >= 100) {
-                    ops.set(hostAddress, 9999, 10, TimeUnit.MINUTES);
-                    exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
-                    return exchange.getResponse().setComplete();
-                }
+//                System.out.println(hostAddress + "api");
             }
+//            }else {
+//                // 普通请求拦截处理
+//                if (ops.get(hostAddress) != null) {
+//                    ops.increment(hostAddress);
+//                } else {
+//                    ops.set(hostAddress, 1, 10, TimeUnit.MINUTES);
+//                }
+//                Integer value = (Integer) ops.get(hostAddress);
+//                // 当判定为为脚本时
+//                if (value >= 100) {
+//                    ops.set(hostAddress, 9999, 10, TimeUnit.MINUTES);
+//                    exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
+//                    return exchange.getResponse().setComplete();
+//                }
+//            }
             return chain.filter(exchange);
         }else{
             // 不是登录/注册页面
             try{
-                tokenHandler.checkToken(request.getHeaders().getFirst(CurrencyConstants.CURRENCY_HEADER_NAME.getValue()));
+                tokenHandler.checkToken(token);
 //                Integer a = 1 + 1;
                 return chain.filter(exchange);
             } catch (Exception e){
