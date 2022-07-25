@@ -2,8 +2,12 @@ package top.twip.higanbana.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.twip.common.entity.image.ImageSetu;
+import top.twip.common.enums.CodeEnum;
+import top.twip.common.response.DataFactory;
+import top.twip.common.response.SimpleData;
 import top.twip.higanbana.service.ApiService;
 
 import javax.annotation.Resource;
@@ -23,18 +27,49 @@ public class ApiController {
     private ApiService apiService;
 
     @GetMapping("/setu")
-    public void getSetu(HttpServletResponse response) throws IOException {
-        response.setHeader("Content-Type", "image/jpg");
-        List<ImageSetu> setus = apiService.getOneSetu();
+    public Object getSetu(@RequestParam("key")String key,
+                          HttpServletResponse response) {
+        try {
+            Boolean aBoolean = apiService.checkKey1(key);
+            if (aBoolean){
+                response.setHeader("Content-Type", "image/jpg");
+                List<ImageSetu> setus = apiService.getOneSetu();
+                ImageSetu imageSetu = setus.get(0);
+                ServletOutputStream outputStream = response.getOutputStream();
+                outputStream.write(imageSetu.getContent());
+                outputStream.close();
+                return DataFactory.success(SimpleData.class, "ok");
+            }else {
+                return DataFactory.fail(CodeEnum.KEY_FORBIDDEN, "这个key过期了或者没次数了");
+            }
+        } catch (Exception e){
+            return DataFactory.fail(CodeEnum.KEY_FORBIDDEN, "这个key过期了或者没次数了");
+        }
+    }
 
-        ImageSetu imageSetu = setus.get(0);
+    @GetMapping("/addsetukey")
+    public Object addSetuKey(){
+        return DataFactory.success(SimpleData.class, "ok")
+                .parseData(apiService.addKey());
+    }
 
-        ServletOutputStream outputStream = response.getOutputStream();
+    @GetMapping("/deletesetukey")
+    public Object deleteSetuKey(@RequestParam("key")String key){
+        return DataFactory.success(SimpleData.class, "ok")
+                .parseData(apiService.deleteKey(key));
+    }
 
-//        FileInputStream s = new FileInputStream(Arrays.toString(setu.getContent()));
-//        outputStream.write(s.readAllBytes());
-        outputStream.write(imageSetu.getContent());
-        outputStream.close();
-//        s.close();
+    @GetMapping("/checksetukey")
+    public Object checkSetuKey(@RequestParam("key")String key){
+        try {
+            Boolean aBoolean = apiService.checkKey2(key);
+            if (aBoolean){
+                return DataFactory.success(SimpleData.class, "ok");
+            }else {
+                return DataFactory.fail(CodeEnum.KEY_FORBIDDEN, "这个key过期了或者没次数了");
+            }
+        } catch (Exception e){
+            return DataFactory.fail(CodeEnum.KEY_FORBIDDEN, "这个key过期了或者没次数了");
+        }
     }
 }

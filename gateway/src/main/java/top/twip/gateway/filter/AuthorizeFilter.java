@@ -56,28 +56,28 @@ public class AuthorizeFilter implements GlobalFilter {
         if (reqUrlPath.equals("/higanbana/blog/user/login")
                 || reqUrlPath.contains("api")
                 || reqUrlPath.equals("/higanbana/blog/user/register")) {
-            if (reqUrlPath.contains("api")) {
+//            if (reqUrlPath.contains("/setu")) {
                 // 先验证token是否合法
-                try{
-                    tokenHandler.checkToken(token);
-                } catch (Exception e){
-                    exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
-                    return exchange.getResponse().setComplete();
-                }
+//                try{
+//                    tokenHandler.checkToken(token);
+//                } catch (Exception e){
+//                    exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
+//                    return exchange.getResponse().setComplete();
+//                }
                 // api请求拦截处理
-                if (ops.get(token + "api") != null) {
-                    Long value = ops.increment(token + "api");
-                    // 当判定为：冲太多
-                    if (value >= 3) {
-                        ops.set(token + "api", 9999, 2, TimeUnit.MINUTES);
-                        exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
-                        return exchange.getResponse().setComplete();
-                    }
-                } else {
-                    ops.set(token + "api", 1, 2, TimeUnit.MINUTES);
-                }
+//                if (ops.get(token + "api") != null) {
+//                    Long value = ops.increment(token + "api");
+//                    // 当判定为：冲太多
+//                    if (value >= 3) {
+//                        ops.set(token + "api", 9999, 2, TimeUnit.MINUTES);
+//                        exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
+//                        return exchange.getResponse().setComplete();
+//                    }
+//                } else {
+//                    ops.set(token + "api", 1, 2, TimeUnit.MINUTES);
+//                }
 //                System.out.println(hostAddress + "api");
-            }
+//            }
 //            }else {
 //                // 普通请求拦截处理
 //                if (ops.get(hostAddress) != null) {

@@ -16,7 +16,8 @@ public enum CodeEnum {
     // 自定义状态码
     NOT_ALL_OK(1204), // 成功了，但是不符合要求
     TOKEN_EXPIRED(1001), // 自定义：TOKEN过期
-    USER_HANDLE_ERROR(1002); // 自定义：用户操作失误
+    USER_HANDLE_ERROR(1002), // 自定义：用户操作失误
+    KEY_FORBIDDEN(1003);
 
     private final Integer code;
 

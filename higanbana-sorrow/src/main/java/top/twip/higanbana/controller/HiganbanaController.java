@@ -69,7 +69,6 @@ public class HiganbanaController {
      * 修改用户
      * @param userInfo 用户信息
      */
-    //todo 未测试
     @PostMapping("/updateUser")
     public Object updateUser(@RequestBody UserInfo userInfo,
                              HttpServletRequest request) throws Exception {
