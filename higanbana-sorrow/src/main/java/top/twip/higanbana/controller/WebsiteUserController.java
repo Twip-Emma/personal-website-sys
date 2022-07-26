@@ -60,9 +60,15 @@ public class WebsiteUserController {
     }
 
     // 查询所有头像
-    @GetMapping("getallavatar")
+    @GetMapping("/getallavatar")
     public Object getAllAvatar()throws Exception{
         return DataFactory.success(SimpleData.class, "查询成功")
                 .parseData(websiteSingleUserService.getAllAvatar());
+    }
+
+    @GetMapping("/getalluser")
+    public Object getAllUser() throws Exception{
+        return DataFactory.success(SimpleData.class, "查询成功")
+                .parseData(websiteSingleUserService.getAllUser());
     }
 }

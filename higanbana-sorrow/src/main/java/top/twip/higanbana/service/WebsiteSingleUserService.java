@@ -13,6 +13,7 @@ import top.twip.higanbana.dao.WebsiteAvatarDao;
 import top.twip.higanbana.dao.WebsiteUserInfoDao;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -104,5 +105,16 @@ public class WebsiteSingleUserService {
         } catch (Exception e){
             throw new DatabaseHandlerException("数据库查询的时候出错力");
         }
+    }
+
+    // 查询所有用户信息
+    public List<WebsiteUserInfo> getAllUser() throws Exception{
+        List<WebsiteUserInfo> websiteUserInfos = websiteUserInfoDao.selectList(null);
+        List<WebsiteUserInfo> resp = new ArrayList<>();
+        for(WebsiteUserInfo o: websiteUserInfos){
+            o.setPass(null);
+            resp.add(o);
+        }
+        return resp;
     }
 }
