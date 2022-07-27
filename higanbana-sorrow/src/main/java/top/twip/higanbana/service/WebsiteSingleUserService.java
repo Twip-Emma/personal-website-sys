@@ -98,6 +98,17 @@ public class WebsiteSingleUserService {
         return byId;
     }
 
+    // 删除用户
+    public Boolean deleteUser(String id) throws Exception{
+        int i = websiteUserInfoDao.delete(new QueryWrapper<WebsiteUserInfo>()
+                .eq("id", id));
+        if(i != 1){
+            return false;
+        }else {
+            return true;
+        }
+    }
+
     // 查询所有头像
     public List<WebsiteAvatarEntity> getAllAvatar() throws Exception{
         try {

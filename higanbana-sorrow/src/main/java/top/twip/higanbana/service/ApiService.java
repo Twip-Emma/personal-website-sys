@@ -62,10 +62,13 @@ public class ApiService {
     }
 
     // 新增一个KEY，默认5次，持续1天
-    public String addKey(){
+    public String addKey(Integer time){
+        if(time == null){
+            time = 5;
+        }
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         ValueOperations<String, Object> ops = redisTemplate.opsForValue();
-        ops.set(uuid,1,1, TimeUnit.DAYS);
+        ops.set(uuid,time,1, TimeUnit.HOURS);
         return uuid;
     }
 

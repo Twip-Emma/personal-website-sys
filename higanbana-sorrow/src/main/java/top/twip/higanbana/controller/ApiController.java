@@ -47,10 +47,15 @@ public class ApiController {
         }
     }
 
+    /**
+     * 获取涩图KEY
+     * @param time KEY使用次数
+     * @return Object Object
+     */
     @GetMapping("/addsetukey")
-    public Object addSetuKey(){
+    public Object addSetuKey(@RequestParam(name = "time", required = false)Integer time){
         return DataFactory.success(SimpleData.class, "ok")
-                .parseData(apiService.addKey());
+                .parseData(apiService.addKey(time));
     }
 
     @GetMapping("/deletesetukey")

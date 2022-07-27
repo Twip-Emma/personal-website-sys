@@ -23,7 +23,6 @@ public class WebsiteBlogController {
     @GetMapping("/selectbloglistbypage")
     public Object getBlogListByPage(@RequestParam("page")Integer page,
                                        HttpServletRequest request) throws Exception{
-//        Thread.sleep(1*1000);
         return DataFactory.success(SimpleData.class, "查询成功")
                 .parseData(websiteSingleBlogService.getBlogListByPage(page));
     }
