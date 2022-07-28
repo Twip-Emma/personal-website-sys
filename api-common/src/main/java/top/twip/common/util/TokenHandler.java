@@ -26,6 +26,7 @@ public class TokenHandler {
                 // 载荷
                 .claim("card", userInfo.getCard())
                 .claim("pass", userInfo.getPass())
+                .claim("admin", userInfo.getIsadmin())
                 .setSubject("user-info")
                 .setExpiration(new Date(System.currentTimeMillis() + TOKEN_TIME))
                 // 签名
@@ -40,5 +41,13 @@ public class TokenHandler {
         Claims claims = claimsJws.getBody();
         claims.get("card");
         claims.get("pass");
+    }
+
+    // 判断该token是否有admin权限
+    public Boolean checkTokenIsAdmin(String token){
+        JwtParser parser = Jwts.parser();
+        Jws<Claims> claimsJws = parser.setSigningKey("user").parseClaimsJws(token);
+        Claims claims = claimsJws.getBody();
+        return (Integer) claims.get("admin") == 1;
     }
 }

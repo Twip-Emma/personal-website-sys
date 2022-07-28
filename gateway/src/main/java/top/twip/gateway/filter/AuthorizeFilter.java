@@ -56,44 +56,23 @@ public class AuthorizeFilter implements GlobalFilter {
         if (reqUrlPath.equals("/higanbana/blog/user/login")
                 || reqUrlPath.contains("api")
                 || reqUrlPath.equals("/higanbana/blog/user/register")) {
-//            if (reqUrlPath.contains("/setu")) {
-                // 先验证token是否合法
-//                try{
-//                    tokenHandler.checkToken(token);
-//                } catch (Exception e){
-//                    exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
-//                    return exchange.getResponse().setComplete();
-//                }
-                // api请求拦截处理
-//                if (ops.get(token + "api") != null) {
-//                    Long value = ops.increment(token + "api");
-//                    // 当判定为：冲太多
-//                    if (value >= 3) {
-//                        ops.set(token + "api", 9999, 2, TimeUnit.MINUTES);
-//                        exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
-//                        return exchange.getResponse().setComplete();
-//                    }
-//                } else {
-//                    ops.set(token + "api", 1, 2, TimeUnit.MINUTES);
-//                }
-//                System.out.println(hostAddress + "api");
-//            }
-//            }else {
-//                // 普通请求拦截处理
-//                if (ops.get(hostAddress) != null) {
-//                    ops.increment(hostAddress);
-//                } else {
-//                    ops.set(hostAddress, 1, 10, TimeUnit.MINUTES);
-//                }
-//                Integer value = (Integer) ops.get(hostAddress);
-//                // 当判定为为脚本时
-//                if (value >= 100) {
-//                    ops.set(hostAddress, 9999, 10, TimeUnit.MINUTES);
-//                    exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
-//                    return exchange.getResponse().setComplete();
-//                }
-//            }
             return chain.filter(exchange);
+        }else if(reqUrlPath.equals("/higanbana/blog/user/getalluser")
+                || reqUrlPath.equals("/higanbana/api/addsetukey")
+                || reqUrlPath.equals("/higanbana/api/deletesetukey")){
+            // 判断是否有管理员权限
+            try{
+                tokenHandler.checkToken(token);
+                Boolean i = tokenHandler.checkTokenIsAdmin(token);
+                if (i){
+                    return chain.filter(exchange);
+                }else {
+                    exchange.getResponse().setStatusCode((HttpStatus.FORBIDDEN));
+                }
+            } catch (Exception e){
+                exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
+            }
+
         }else{
             // 不是登录/注册页面
             try{

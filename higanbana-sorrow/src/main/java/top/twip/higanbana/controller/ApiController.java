@@ -32,7 +32,7 @@ public class ApiController {
         try {
             Boolean aBoolean = apiService.checkKey1(key);
             if (aBoolean){
-                response.setHeader("Content-Type", "image/jpg");
+//                response.setHeader("Content-Type", "image/jpg");
                 List<ImageSetu> setus = apiService.getOneSetu();
                 ImageSetu imageSetu = setus.get(0);
                 ServletOutputStream outputStream = response.getOutputStream();
