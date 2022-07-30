@@ -30,6 +30,9 @@ public class WebsiteCommonService {
             List<WebsiteMessageEntity> entities = websiteMessageEntityDao.selectList(null);
             for(WebsiteMessageEntity o: entities){
                 WebsiteUserInfo userInfo = websiteUserInfoDao.selectById(o.getUserId());
+                if(userInfo == null){
+                    continue;
+                }
                 o.setAvatar(userInfo.getAvatar());
                 o.setNickname(userInfo.getNickname());
             }
