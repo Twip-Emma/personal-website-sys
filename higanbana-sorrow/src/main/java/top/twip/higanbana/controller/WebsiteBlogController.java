@@ -27,6 +27,21 @@ public class WebsiteBlogController {
                 .parseData(websiteSingleBlogService.getBlogListByPage(page));
     }
 
+    @GetMapping("/selectbloglistbyname")
+    public Object getBlogListByName(@RequestParam("page")Integer page,
+                                    @RequestParam("name")String name,
+                                    HttpServletRequest request) throws Exception{
+        return DataFactory.success(SimpleData.class, "查询成功")
+                .parseData(websiteSingleBlogService.getBlogListByName(page, name));
+    }
+
+    @GetMapping("/selectbloglisttotalcountbyname")
+    public Object getBlogTotalCount(@RequestParam("name")String name,
+                                    HttpServletRequest request){
+        return DataFactory.success(SimpleData.class, "查询成功")
+                .parseData(websiteSingleBlogService.getBlogListCountByName(name));
+    }
+
     @GetMapping("/selectbloglisttotalcount")
     public Object getBlogTotalCount(HttpServletRequest request){
         return DataFactory.success(SimpleData.class, "查询成功")

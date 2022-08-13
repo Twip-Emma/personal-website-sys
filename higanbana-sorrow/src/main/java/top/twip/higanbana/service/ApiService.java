@@ -28,6 +28,7 @@ public class ApiService {
     private RedisTemplate<String, Object> redisTemplate;
 
     // 判断KEY是否合法1
+    // 合法时自动减一
     public Boolean checkKey1(String key){
         ValueOperations<String, Object> ops = redisTemplate.opsForValue();
         // 如果KEY不存在
@@ -46,6 +47,7 @@ public class ApiService {
     }
 
     // 判断KEY是否合法2
+    // 仅检查，不做处理
     public Boolean checkKey2(String key){
         ValueOperations<String, Object> ops = redisTemplate.opsForValue();
         // 如果KEY不存在
@@ -61,7 +63,7 @@ public class ApiService {
         }
     }
 
-    // 新增一个KEY，默认5次，持续1天
+    // 新增一个KEY，默认5次，持续1小时
     public String addKey(Integer time){
         if(time == null){
             time = 5;
@@ -86,11 +88,21 @@ public class ApiService {
     // 获取一张图片
     public List<ImageSetu> getOneSetu(){
         Integer databaseNum = getRandomNum(1, 9);
-            Integer databaseCount;
-            Integer i;
-            databaseCount = getDatabaseCount(databaseNum);
-            i = getRandomNum(databaseCount, 1);
-            return imageSetuDao.userGetOneSetuByIndex(databaseNum,i);
+        Integer databaseCount;
+        Integer i;
+        databaseCount = getDatabaseCount(databaseNum);
+        i = getRandomNum(databaseCount, 1);
+        return imageSetuDao.userGetOneSetuByIndex(databaseNum,i);
+    }
+
+    // 根据等级获取一张图片
+    public List<ImageSetu> getOneSetuX(){
+        Integer databaseNum = 1;
+        Integer databaseCount;
+        Integer i;
+        databaseCount = getDatabaseCountX(databaseNum);
+        i = getRandomNum(databaseCount, 1);
+        return imageSetuDao.userGetOneSetuByIndexX(databaseNum,i);
     }
 
     //获取一个随机数
@@ -99,8 +111,13 @@ public class ApiService {
         return (int)(Math.random() * (max - min + 1) + min);
     }
 
-    //查询某个数据库的表记录数量
+    //查询某个数据库的表记录数量S
     private Integer getDatabaseCount(Integer databaseNum){
         return imageSetuDao.getCountByDatabaseName(databaseNum,500);
+    }
+
+    //查询某个数据库的表记录数量X
+    private Integer getDatabaseCountX(Integer databaseNum){
+        return imageSetuDao.getCountByDatabaseNameX(databaseNum,500);
     }
 }

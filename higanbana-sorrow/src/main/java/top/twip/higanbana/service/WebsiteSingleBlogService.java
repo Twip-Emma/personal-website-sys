@@ -43,6 +43,17 @@ public class WebsiteSingleBlogService {
     public List<WebsiteBlogList> getBlogListByPage(Integer page){
         Page<WebsiteBlogList> objectPage = new Page<>(page, PageConstants.BlogListPageTotal);
         List<WebsiteBlogList> records = websiteBlogListDao.selectPage(objectPage, null).getRecords();
+        return getWebsiteBlogLists(records);
+    }
+
+    // 获取博客列表、分页+模糊查询
+    public List<WebsiteBlogList> getBlogListByName(Integer page,String name){
+        Integer startNum = PageConstants.BlogListPageTotal * (page - 1);
+        List<WebsiteBlogList> records = websiteBlogListDao.getBlogByName("%" + name + "%", startNum, PageConstants.BlogListPageTotal);
+        return getWebsiteBlogLists(records);
+    }
+
+    private List<WebsiteBlogList> getWebsiteBlogLists(List<WebsiteBlogList> records) {
         List<WebsiteBlogList> resp = new ArrayList<>();
         for(WebsiteBlogList o: records){
             WebsiteUserInfo websiteUserInfo = websiteUserInfoDao.selectById(o.getUserId());
@@ -50,6 +61,11 @@ public class WebsiteSingleBlogService {
             resp.add(o);
         }
         return resp;
+    }
+
+    // 获取博客列表、分页+模糊查询（查询数量）
+    public Integer getBlogListCountByName(String name){
+        return websiteBlogListDao.getBlogCountByName("%"+name+"%");
     }
 
     // 获取当前博客数量

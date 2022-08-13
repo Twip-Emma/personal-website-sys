@@ -84,7 +84,6 @@ public class HiganbanaController {
      * 删除用户
      * @param id 用户id
      */
-    //todo 未测试
     @PostMapping("/deleteUser")
     public Object deleteUser(@RequestParam String id,
                              HttpServletRequest request) throws Exception {

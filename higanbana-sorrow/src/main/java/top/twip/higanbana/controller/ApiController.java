@@ -32,8 +32,29 @@ public class ApiController {
         try {
             Boolean aBoolean = apiService.checkKey1(key);
             if (aBoolean){
-//                response.setHeader("Content-Type", "image/jpg");
+                response.setHeader("Content-Type", "image/jpg");
                 List<ImageSetu> setus = apiService.getOneSetu();
+                ImageSetu imageSetu = setus.get(0);
+                ServletOutputStream outputStream = response.getOutputStream();
+                outputStream.write(imageSetu.getContent());
+                outputStream.close();
+                return DataFactory.success(SimpleData.class, "ok");
+            }else {
+                return DataFactory.fail(CodeEnum.KEY_FORBIDDEN, "这个key过期了或者没次数了");
+            }
+        } catch (Exception e){
+            return DataFactory.fail(CodeEnum.KEY_FORBIDDEN, "这个key过期了或者没次数了");
+        }
+    }
+
+    @GetMapping("/setux")
+    public Object getSetux(@RequestParam("key")String key,
+                          HttpServletResponse response) throws Exception {
+        try {
+            Boolean aBoolean = apiService.checkKey1(key);
+            if (aBoolean){
+                response.setHeader("Content-Type", "image/jpg");
+                List<ImageSetu> setus = apiService.getOneSetuX();
                 ImageSetu imageSetu = setus.get(0);
                 ServletOutputStream outputStream = response.getOutputStream();
                 outputStream.write(imageSetu.getContent());
