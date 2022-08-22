@@ -97,7 +97,7 @@ public class ApiService {
 
     // 根据等级获取一张图片
     public List<ImageSetu> getOneSetuX(){
-        Integer databaseNum = 1;
+        Integer databaseNum = getRandomNum(1, 2);
         Integer databaseCount;
         Integer i;
         databaseCount = getDatabaseCountX(databaseNum);

@@ -98,7 +98,10 @@ public class WebsiteSingleBlogService {
             throw new DatabaseDataNotFound("数据未找到");
         }
         WebsiteUserInfo websiteUserInfo = websiteUserInfoDao.selectById(blog.getUserId());
+        websiteUserInfo.setPass(null);
         blog.setUser(websiteUserInfo);
+        blog.setViews(blog.getViews() + 1);
+        websiteBlogListDao.updateById(blog);
         return blog;
     }
 

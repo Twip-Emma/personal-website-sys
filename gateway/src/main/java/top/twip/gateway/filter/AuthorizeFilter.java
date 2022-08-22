@@ -77,7 +77,6 @@ public class AuthorizeFilter implements GlobalFilter {
             // 不是登录/注册页面
             try{
                 tokenHandler.checkToken(token);
-//                Integer a = 1 + 1;
                 return chain.filter(exchange);
             } catch (Exception e){
                 exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
