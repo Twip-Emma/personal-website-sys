@@ -77,6 +77,8 @@ public class ApiController {
     public Object addSetuKey(@RequestParam(name = "time", required = false)Integer time){
         return DataFactory.success(SimpleData.class, "ok")
                 .parseData(apiService.addKey(time));
+//        System.out.println(time);
+//        return null;
     }
 
     @GetMapping("/deletesetukey")

@@ -12,7 +12,8 @@ import java.util.Date;
  */
 @Component
 public class TokenHandler {
-    private static final Integer TOKEN_TIME = 1000*60*60*3; // 有效时间3小时
+    private static final Integer TOKEN_TIME = 1000*60*60*24*2; // 有效时间2天
+//    private static final Integer TOKEN_TIME = 1000*20; // 有效时间20秒
 
     private static final String SIGN = "user";
 

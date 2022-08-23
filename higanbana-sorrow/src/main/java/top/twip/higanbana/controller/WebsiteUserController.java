@@ -6,6 +6,7 @@ import top.twip.common.entity.user.WebsiteUserInfo;
 import top.twip.common.enums.CodeEnum;
 import top.twip.common.response.DataFactory;
 import top.twip.common.response.SimpleData;
+import top.twip.common.util.TokenHandler;
 import top.twip.higanbana.service.WebsiteSingleUserService;
 
 import javax.annotation.Resource;
@@ -21,6 +22,9 @@ public class WebsiteUserController {
 
     @Resource
     private WebsiteSingleUserService websiteSingleUserService;
+
+    @Resource
+    private TokenHandler tokenHandler;
 
     // 用户登录
     @PostMapping("/login")
@@ -83,9 +87,22 @@ public class WebsiteUserController {
                 .parseData(websiteSingleUserService.getAllAvatar());
     }
 
+    // 获取所有用户
     @GetMapping("/getalluser")
     public Object getAllUser() throws Exception{
         return DataFactory.success(SimpleData.class, "查询成功")
                 .parseData(websiteSingleUserService.getAllUser());
+    }
+
+    // 验证token
+    @GetMapping("/checktoken")
+    public Object checkToken(@RequestParam("token")String token) throws Exception{
+        try{
+            tokenHandler.checkToken(token);
+            return DataFactory.success(SimpleData.class, "合法token");
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return DataFactory.fail(CodeEnum.UNAUTHORIZED, "非法token");
+        }
     }
 }

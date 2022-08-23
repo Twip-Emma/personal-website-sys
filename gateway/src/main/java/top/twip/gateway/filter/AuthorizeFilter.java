@@ -55,7 +55,8 @@ public class AuthorizeFilter implements GlobalFilter {
         // 判断是否是登录界面
         if (reqUrlPath.equals("/higanbana/blog/user/login")
                 || reqUrlPath.contains("api")
-                || reqUrlPath.equals("/higanbana/blog/user/register")) {
+                || reqUrlPath.equals("/higanbana/blog/user/register")
+                || reqUrlPath.equals("/higanbana/blog/user/checktoken")) {
             return chain.filter(exchange);
         }else if(reqUrlPath.equals("/higanbana/blog/user/getalluser")
                 || reqUrlPath.equals("/higanbana/api/addsetukey")
