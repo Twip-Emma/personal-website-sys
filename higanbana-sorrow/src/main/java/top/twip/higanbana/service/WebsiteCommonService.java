@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import top.twip.common.entity.blog.WebsiteMessageEntity;
 import top.twip.common.entity.user.WebsiteUserInfo;
 import top.twip.common.exception.DatabaseHandlerException;
+import top.twip.common.util.TokenRedisHandler;
 import top.twip.higanbana.dao.WebsiteMessageEntityDao;
 import top.twip.higanbana.dao.WebsiteUserInfoDao;
 
@@ -23,6 +24,9 @@ public class WebsiteCommonService {
 
     @Resource
     private WebsiteUserInfoDao websiteUserInfoDao;
+
+    @Resource
+    private TokenRedisHandler tokenRedisHandler;
 
     // 获取所有全局评论
     public List<WebsiteMessageEntity> getAllMessage() throws Exception{
@@ -44,7 +48,9 @@ public class WebsiteCommonService {
 
 
     // 发表全局评论
-    public WebsiteMessageEntity addMessage(WebsiteMessageEntity input) throws Exception{
+    public WebsiteMessageEntity addMessage(WebsiteMessageEntity input, String token) throws Exception{
+        String userId = tokenRedisHandler.getIdByToken(token);
+        input.setUserId(userId);
         int i = websiteMessageEntityDao.insert(input);
         if(i != 1){
             throw new DatabaseHandlerException("数据库执行插入的时候出现错误力");
