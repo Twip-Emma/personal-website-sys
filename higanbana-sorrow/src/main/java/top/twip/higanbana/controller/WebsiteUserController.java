@@ -1,6 +1,7 @@
 package top.twip.higanbana.controller;
 
 import org.springframework.web.bind.annotation.*;
+import top.twip.common.constant.CurrencyConstants;
 import top.twip.common.entity.user.UserInfo;
 import top.twip.common.entity.user.WebsiteUserInfo;
 import top.twip.common.enums.CodeEnum;
@@ -53,8 +54,9 @@ public class WebsiteUserController {
     @PostMapping("updateuser")
     public Object updateUser(@RequestBody WebsiteUserInfo websiteUserInfo,
                            HttpServletRequest request) throws Exception{
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
         return DataFactory.success(SimpleData.class, "注册成功")
-                .parseData(websiteSingleUserService.updateUser(websiteUserInfo));
+                .parseData(websiteSingleUserService.updateUser(websiteUserInfo, token));
     }
 
     @PostMapping("deleteuser")

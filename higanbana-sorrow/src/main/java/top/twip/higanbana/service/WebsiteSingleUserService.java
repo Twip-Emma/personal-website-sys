@@ -85,7 +85,10 @@ public class WebsiteSingleUserService {
     }
 
     //修改用户
-    public WebsiteUserInfo updateUser(WebsiteUserInfo user) throws Exception{
+    public WebsiteUserInfo updateUser(WebsiteUserInfo user, String token) throws Exception{
+        String userId = tokenRedisHandler.getIdByToken(token);
+        user.setId(userId);
+
         WebsiteUserInfo byId = websiteUserInfoDao.selectById(user.getId());
         if (byId == null){
             throw new DatabaseDataNotFound("数据未找到");
