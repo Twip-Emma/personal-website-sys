@@ -11,6 +11,10 @@ import java.util.List;
  * @Author: 七画一只妖
  * @Date: 2022-07-06 13:55
  */
+
+/**
+ * 涩图查询
+ */
 public interface ImageSetuDao extends BaseMapper<ImageSetu> {
 
     // 在指定仓库查询

@@ -9,6 +9,7 @@ import top.twip.common.exception.DatabaseDataNotFound;
 import top.twip.common.exception.DatabaseHandlerException;
 import top.twip.common.util.BCryptHandler;
 import top.twip.common.util.TokenHandler;
+import top.twip.common.util.TokenRedisHandler;
 import top.twip.higanbana.dao.WebsiteAvatarDao;
 import top.twip.higanbana.dao.WebsiteUserInfoDao;
 
@@ -32,7 +33,7 @@ public class WebsiteSingleUserService {
     private BCryptHandler bCryptHandler;
 
     @Resource
-    private TokenHandler tokenHandler;
+    private TokenRedisHandler tokenRedisHandler;
 
     public WebsiteUserInfo userLogin(String card,String pass) throws Exception{
         WebsiteUserInfo one = websiteUserInfoDao.selectOne(new QueryWrapper<WebsiteUserInfo>()
@@ -46,7 +47,7 @@ public class WebsiteSingleUserService {
         if (!a){
             throw new BadRequestDataException("密码错误，请重试");
         }else {
-            one.setToken(tokenHandler.getToken(one));
+            one.setToken(tokenRedisHandler.getToken(one));
             one.setPass(null);
             return one;
         }
@@ -78,7 +79,7 @@ public class WebsiteSingleUserService {
         if(one == null){
             throw new DatabaseHandlerException("数据库执行插入的时候出现错误力");
         }
-        one.setToken(tokenHandler.getToken(one));
+        one.setToken(tokenRedisHandler.getToken(one));
         one.setPass(null);
         return one;
     }

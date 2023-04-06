@@ -11,6 +11,7 @@ import top.twip.common.entity.blog.WebsiteMessageEntity;
 import top.twip.common.entity.user.WebsiteUserInfo;
 import top.twip.common.exception.DatabaseDataNotFound;
 import top.twip.common.exception.DatabaseHandlerException;
+import top.twip.common.util.TokenRedisHandler;
 import top.twip.higanbana.dao.WebsiteBlogListDao;
 import top.twip.higanbana.dao.WebsiteBlogReplyEntityDao;
 import top.twip.higanbana.dao.WebsiteMessageEntityDao;
@@ -37,6 +38,8 @@ public class WebsiteSingleBlogService {
     @Resource
     private WebsiteBlogReplyEntityDao websiteBlogReplyEntityDao;
 
+    @Resource
+    private TokenRedisHandler tokenRedisHandler;
 
 
     // 获取博客列表、分页查询
@@ -106,12 +109,14 @@ public class WebsiteSingleBlogService {
     }
 
     // 发表博客评论
-    public WebsiteBlogReplyEntity addReply(WebsiteBlogReplyEntity input) throws Exception{
+    public WebsiteBlogReplyEntity addReply(WebsiteBlogReplyEntity input, String token) throws Exception{
 
 //        WebsiteBlogReplyEntity reply = new WebsiteBlogReplyEntity();
 //        reply.setContent(input.getContent());
 //        reply.setArticleId(input.getArticleId());
 //        reply.setUserId(input.getUserId());
+        String id = tokenRedisHandler.getIdByToken(token);
+        input.setUserId(id);
         int i = websiteBlogReplyEntityDao.insert(input);
         if(i != 1){
             throw new DatabaseHandlerException("数据库执行插入的时候出现错误力");
