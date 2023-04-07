@@ -18,10 +18,7 @@ import top.twip.higanbana.dao.WebsiteMessageEntityDao;
 import top.twip.higanbana.dao.WebsiteUserInfoDao;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -125,7 +122,7 @@ public class WebsiteSingleBlogService {
         blog.setUser(websiteUserInfo);
         blog.setViews(blog.getViews() + 1);
         websiteBlogListDao.updateById(blog);
-        return blog;
+        return getStringByBytes(blog);
     }
 
     /**
@@ -142,6 +139,22 @@ public class WebsiteSingleBlogService {
             throw new DatabaseHandlerException("数据库执行插入的时候出现错误力");
         }
         return input;
+    }
+
+    /**
+     * 新增博客
+     * @param blog 博客实体
+     * @param token TOKEN
+     * @return Boolean 是否成功
+     */
+    public Boolean addBlog(WebsiteBlogList blog, String token) {
+        String id = tokenRedisHandler.getIdByToken(token);
+        blog.setUserId(id);
+        blog.setViews(0);
+        blog.setTypeColor("#59c9fb");
+        blog.setContentBytes(blog.getContent().getBytes());
+        int i = websiteBlogListDao.insert(blog);
+        return i == 1;
     }
 
     /**
@@ -169,4 +182,8 @@ public class WebsiteSingleBlogService {
         return records;
     }
 
+    private WebsiteBlogList getStringByBytes(WebsiteBlogList blog) {
+        blog.setContent(new String(blog.getContentBytes()));
+        return blog;
+    }
 }

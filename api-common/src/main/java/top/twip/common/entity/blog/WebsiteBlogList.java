@@ -2,6 +2,7 @@ package top.twip.common.entity.blog;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import org.apache.ibatis.type.BlobTypeHandler;
 import top.twip.common.entity.user.WebsiteUserInfo;
 
 /**
@@ -15,7 +16,9 @@ public class WebsiteBlogList {
     private String id;
 
     private String title;
+    @TableField(exist = false)
     private String content;
+    private byte[] contentBytes;
     private String firstPicture;
     private String flag;
 

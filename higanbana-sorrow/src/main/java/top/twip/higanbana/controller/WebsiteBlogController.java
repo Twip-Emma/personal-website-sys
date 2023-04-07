@@ -2,6 +2,7 @@ package top.twip.higanbana.controller;
 
 import org.springframework.web.bind.annotation.*;
 import top.twip.common.constant.CurrencyConstants;
+import top.twip.common.entity.blog.WebsiteBlogList;
 import top.twip.common.entity.blog.WebsiteBlogReplyEntity;
 import top.twip.common.response.DataFactory;
 import top.twip.common.response.SimpleData;
@@ -98,5 +99,13 @@ public class WebsiteBlogController {
     public Object getBlogInfoById(@RequestParam("blogid")String blogId) throws Exception{
         return DataFactory.success(SimpleData.class, "查询成功")
                 .parseData(websiteSingleBlogService.getBlogById(blogId));
+    }
+
+    @PostMapping("/add")
+    public Object addBlog(@RequestBody WebsiteBlogList blog,
+                          HttpServletRequest request) {
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        return DataFactory.success(SimpleData.class, "添加成功")
+                .parseData(websiteSingleBlogService.addBlog(blog, token));
     }
 }
