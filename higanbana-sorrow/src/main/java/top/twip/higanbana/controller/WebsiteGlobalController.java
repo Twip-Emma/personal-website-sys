@@ -17,12 +17,20 @@ public class WebsiteGlobalController {
     @Resource
     WebsiteCommonService websiteCommonService;
 
+    /**
+     * 获取网站所有留言
+     * @return Object 留言列表
+     */
     @GetMapping("/getallmessage")
-    public Object getAllMessage(HttpServletRequest request) throws Exception{
+    public Object getAllMessage() throws Exception{
         return DataFactory.success(SimpleData.class,"查询成功")
                 .parseData(websiteCommonService.getAllMessage());
     }
 
+    /**
+     * 新增一个网站留言
+     * @param websiteMessageEntity 网站留言实体
+     */
     @PostMapping("/addmessage")
     public Object addMessage(@RequestBody WebsiteMessageEntity websiteMessageEntity,
                              HttpServletRequest request) throws Exception{

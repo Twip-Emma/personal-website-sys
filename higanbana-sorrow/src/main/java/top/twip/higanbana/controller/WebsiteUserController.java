@@ -27,10 +27,13 @@ public class WebsiteUserController {
     @Resource
     private TokenHandler tokenHandler;
 
-    // 用户登录
+    /**
+     * 用户登录
+     * @param websiteUserInfo 用户实体
+     * @return Object 用户实体
+     */
     @PostMapping("/login")
-    public Object login(@RequestBody WebsiteUserInfo websiteUserInfo,
-                        HttpServletRequest request) throws Exception{
+    public Object login(@RequestBody WebsiteUserInfo websiteUserInfo) throws Exception{
         return DataFactory.success(SimpleData.class, "登录成功力")
                 .parseData(websiteSingleUserService.userLogin(
                         websiteUserInfo.getCard(),
@@ -38,10 +41,13 @@ public class WebsiteUserController {
                 ));
     }
 
-
+    /**
+     * 用户注册
+     * @param websiteUserInfo 用户实体
+     * @return Object 用户实体
+     */
     @PostMapping("/register")
-    public Object register(@RequestBody WebsiteUserInfo websiteUserInfo,
-                           HttpServletRequest request) throws Exception{
+    public Object register(@RequestBody WebsiteUserInfo websiteUserInfo) throws Exception{
         return DataFactory.success(SimpleData.class, "注册成功")
                 .parseData(websiteSingleUserService.userRegister(
                         websiteUserInfo.getNickname(),
@@ -50,7 +56,11 @@ public class WebsiteUserController {
                 ));
     }
 
-
+    /**
+     * 更新用户信息
+     * @param websiteUserInfo 用户实体
+     * @return Object 用户实体
+     */
     @PostMapping("updateuser")
     public Object updateUser(@RequestBody WebsiteUserInfo websiteUserInfo,
                            HttpServletRequest request) throws Exception{
@@ -59,9 +69,13 @@ public class WebsiteUserController {
                 .parseData(websiteSingleUserService.updateUser(websiteUserInfo, token));
     }
 
+    /**
+     * 删除一个用户
+     * @param websiteUserInfo 用户实体
+     * @return Object bool是否删除成功
+     */
     @PostMapping("deleteuser")
-    public Object deleteUser(@RequestBody WebsiteUserInfo websiteUserInfo,
-                             HttpServletRequest request) throws Exception{
+    public Object deleteUser(@RequestBody WebsiteUserInfo websiteUserInfo){
         try{
             Boolean i = websiteSingleUserService.deleteUser(websiteUserInfo.getId());
             if (i){
@@ -74,37 +88,33 @@ public class WebsiteUserController {
         }
     }
 
-
-    // 根据用户ID查询这个用户实体
+    /**
+     * 根据用户ID查询这个用户实体
+     * @param userId 用户ID
+     * @return Object 用户实体
+     */
     @GetMapping("/getbyid")
-    public Object getWebsiteUserById(@RequestParam("userid")String userId,
-                                     HttpServletRequest request)throws Exception{
+    public Object getWebsiteUserById(@RequestParam("userid")String userId)throws Exception{
         return null;
     }
 
-    // 查询所有头像
+    /**
+     * 查询所有头像
+     * @return Object 头像列表
+     */
     @GetMapping("/getallavatar")
     public Object getAllAvatar()throws Exception{
         return DataFactory.success(SimpleData.class, "查询成功")
                 .parseData(websiteSingleUserService.getAllAvatar());
     }
 
-    // 获取所有用户
+    /**
+     * 获取所有用户
+     * @return Object 用户列表
+     */
     @GetMapping("/getalluser")
     public Object getAllUser() throws Exception{
         return DataFactory.success(SimpleData.class, "查询成功")
                 .parseData(websiteSingleUserService.getAllUser());
-    }
-
-    // 验证token
-    @GetMapping("/checktoken")
-    public Object checkToken(@RequestParam("token")String token) throws Exception{
-        try{
-            tokenHandler.checkToken(token);
-            return DataFactory.success(SimpleData.class, "合法token");
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            return DataFactory.fail(CodeEnum.UNAUTHORIZED, "非法token");
-        }
     }
 }

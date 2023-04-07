@@ -35,6 +35,12 @@ public class WebsiteSingleUserService {
     @Resource
     private TokenRedisHandler tokenRedisHandler;
 
+    /**
+     * 用户登录
+     * @param card 账号
+     * @param pass 密码
+     * @return WebsiteUserInfo 用户实体
+     */
     public WebsiteUserInfo userLogin(String card,String pass) throws Exception{
         WebsiteUserInfo one = websiteUserInfoDao.selectOne(new QueryWrapper<WebsiteUserInfo>()
                 .eq("card", card));
@@ -53,7 +59,13 @@ public class WebsiteSingleUserService {
         }
     }
 
-
+    /**
+     * 用户注册
+     * @param nickname 昵称
+     * @param card 账户
+     * @param pass 密码
+     * @return WebsiteUserInfo 用户实体
+     */
     public WebsiteUserInfo userRegister(String nickname,String card,String pass) throws Exception{
         WebsiteUserInfo one = websiteUserInfoDao.selectOne(new QueryWrapper<WebsiteUserInfo>()
                 .eq("card", card));
@@ -84,7 +96,12 @@ public class WebsiteSingleUserService {
         return one;
     }
 
-    //修改用户
+    /**
+     * 修改用户信息
+     * @param user 用户实体
+     * @param token TOKEN
+     * @return WebsiteUserInfo 用户实体
+     */
     public WebsiteUserInfo updateUser(WebsiteUserInfo user, String token) throws Exception{
         String userId = tokenRedisHandler.getIdByToken(token);
         user.setId(userId);
@@ -102,8 +119,12 @@ public class WebsiteSingleUserService {
         return byId;
     }
 
-    // 删除用户
-    public Boolean deleteUser(String id) throws Exception{
+    /**
+     * 删除用户
+     * @param id 用户ID
+     * @return Boolean 是否删除成功
+     */
+    public Boolean deleteUser(String id){
         int i = websiteUserInfoDao.delete(new QueryWrapper<WebsiteUserInfo>()
                 .eq("id", id));
         if(i != 1){
@@ -113,7 +134,10 @@ public class WebsiteSingleUserService {
         }
     }
 
-    // 查询所有头像
+    /**
+     * 查询头像列表
+     * @return List<WebsiteAvatarEntity> 头像实体列表
+     */
     public List<WebsiteAvatarEntity> getAllAvatar() throws Exception{
         try {
             return websiteAvatarDao.selectList(null);
@@ -122,8 +146,11 @@ public class WebsiteSingleUserService {
         }
     }
 
-    // 查询所有用户信息
-    public List<WebsiteUserInfo> getAllUser() throws Exception{
+    /**
+     * 查询所有用户信息
+     * @return List<WebsiteUserInfo> 用户信息实体
+     */
+    public List<WebsiteUserInfo> getAllUser(){
         List<WebsiteUserInfo> websiteUserInfos = websiteUserInfoDao.selectList(null);
         List<WebsiteUserInfo> resp = new ArrayList<>();
         for(WebsiteUserInfo o: websiteUserInfos){

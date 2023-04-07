@@ -26,6 +26,11 @@ public class ApiController {
     @Resource
     private ApiService apiService;
 
+    /**
+     * 根据KEY获取图片
+     * @param key KEY
+     * @param response 图片
+     */
     @GetMapping("/setu")
     public Object getSetu(@RequestParam("key")String key,
                           HttpServletResponse response) {
@@ -47,6 +52,11 @@ public class ApiController {
         }
     }
 
+    /**
+     * 根据KEY获取X级图片
+     * @param key KEY
+     * @param response 图片
+     */
     @GetMapping("/setux")
     public Object getSetux(@RequestParam("key")String key,
                           HttpServletResponse response) throws Exception {
@@ -81,12 +91,20 @@ public class ApiController {
 //        return null;
     }
 
+    /**
+     * 删除一个KEY
+     * @param key KEY
+     */
     @GetMapping("/deletesetukey")
     public Object deleteSetuKey(@RequestParam("key")String key){
         return DataFactory.success(SimpleData.class, "ok")
                 .parseData(apiService.deleteKey(key));
     }
 
+    /**
+     * 验证KEY是否合法
+     * @param key KEY
+     */
     @GetMapping("/checksetukey")
     public Object checkSetuKey(@RequestParam("key")String key){
         try {

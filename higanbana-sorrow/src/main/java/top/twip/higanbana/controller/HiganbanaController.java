@@ -23,10 +23,10 @@ public class HiganbanaController {
     private UserService userService;
 
     /**
-     * 获取全部用户
+     * 获取全部用户<模板功能>
      */
     @RequestMapping("/getAllUser")
-    public Object index(HttpServletRequest request) throws Exception {
+    public Object index(HttpServletRequest request){
         if(request.getHeader(FeignConstants.HEADER_NAME.getValue()) != null) {
             return userService.getAllUserInfo();
         }
@@ -36,7 +36,7 @@ public class HiganbanaController {
     }
 
     /**
-     * 根据用户id查询用户
+     * 根据用户id查询用户<模板功能>
      * @param id 用户id
      */
     @PostMapping("/getUserById")
@@ -51,7 +51,7 @@ public class HiganbanaController {
     }
 
     /**
-     * 新增用户
+     * 新增用户<模板功能>
      * @param userInfo 用户信息
      * @return 用户信息
      */
@@ -66,7 +66,7 @@ public class HiganbanaController {
     }
 
     /**
-     * 修改用户
+     * 修改用户<模板功能>
      * @param userInfo 用户信息
      */
     @PostMapping("/updateUser")
@@ -81,12 +81,11 @@ public class HiganbanaController {
 
 
     /**
-     * 删除用户
+     * 删除用户<模板功能>
      * @param id 用户id
      */
     @PostMapping("/deleteUser")
-    public Object deleteUser(@RequestParam String id,
-                             HttpServletRequest request) throws Exception {
+    public Object deleteUser(@RequestParam String id) throws Exception {
         userService.deleteUserInfo(id);
         return DataFactory.success(SimpleData.class, "删除成功");
     }

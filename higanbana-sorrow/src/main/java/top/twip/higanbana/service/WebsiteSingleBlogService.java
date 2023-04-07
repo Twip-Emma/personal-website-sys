@@ -21,6 +21,9 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @Author: 七画一只妖
@@ -42,49 +45,62 @@ public class WebsiteSingleBlogService {
     private TokenRedisHandler tokenRedisHandler;
 
 
-    // 获取博客列表、分页查询
-    public List<WebsiteBlogList> getBlogListByPage(Integer page){
+    /**
+     * 获取博客列表、分页查询
+     *
+     * @param page 当前页码
+     * @return List<WebsiteBlogList> 博客列表
+     */
+    public List<WebsiteBlogList> getBlogListByPage(Integer page) {
         Page<WebsiteBlogList> objectPage = new Page<>(page, PageConstants.BlogListPageTotal);
         List<WebsiteBlogList> records = websiteBlogListDao.selectPage(objectPage, null).getRecords();
         return getWebsiteBlogLists(records);
     }
 
-    // 获取博客列表、分页+模糊查询
-    public List<WebsiteBlogList> getBlogListByName(Integer page,String name){
+    /**
+     * 获取博客列表、分页+模糊查询
+     *
+     * @param page 当前页码
+     * @param name 名称
+     * @return List<WebsiteBlogList> 博客列表
+     */
+    public List<WebsiteBlogList> getBlogListByName(Integer page, String name) {
         Integer startNum = PageConstants.BlogListPageTotal * (page - 1);
         List<WebsiteBlogList> records = websiteBlogListDao.getBlogByName("%" + name + "%", startNum, PageConstants.BlogListPageTotal);
         return getWebsiteBlogLists(records);
     }
 
-    private List<WebsiteBlogList> getWebsiteBlogLists(List<WebsiteBlogList> records) {
-        List<WebsiteBlogList> resp = new ArrayList<>();
-        for(WebsiteBlogList o: records){
-            WebsiteUserInfo websiteUserInfo = websiteUserInfoDao.selectById(o.getUserId());
-            o.setUser(websiteUserInfo);
-            resp.add(o);
-        }
-        return resp;
+
+    /**
+     * 获取博客列表、分页+模糊查询（查询数量）
+     * @param name 名称
+     * @return Integer 数量
+     */
+    public Integer getBlogListCountByName(String name) {
+        return websiteBlogListDao.getBlogCountByName("%" + name + "%");
     }
 
-    // 获取博客列表、分页+模糊查询（查询数量）
-    public Integer getBlogListCountByName(String name){
-        return websiteBlogListDao.getBlogCountByName("%"+name+"%");
-    }
-
-    // 获取当前博客数量
-    public Integer getBlogTotalCount(){
+    /**
+     * 获取当前博客数量
+     * @return Integer 数量
+     */
+    public Integer getBlogTotalCount() {
         return websiteBlogListDao.selectCount(null);
     }
 
-    // 获取对应博客下的评论列表
-    public List<WebsiteBlogReplyEntity> getReplyListById(String blogId){
+    /**
+     * 获取当前博客下的评论
+     * @param blogId 博客ID
+     * @return List<WebsiteBlogReplyEntity> 评论实体列表
+     */
+    public List<WebsiteBlogReplyEntity> getReplyListById(String blogId) {
         List<WebsiteBlogReplyEntity> entities = websiteBlogReplyEntityDao.selectList(new QueryWrapper<WebsiteBlogReplyEntity>()
                 .eq("article_id", blogId));
 
         List<WebsiteBlogReplyEntity> resp = new ArrayList<>();
-        for(WebsiteBlogReplyEntity o: entities){
+        for (WebsiteBlogReplyEntity o : entities) {
             WebsiteUserInfo userInfo = websiteUserInfoDao.selectById(o.getUserId());
-            if (userInfo == null){
+            if (userInfo == null) {
                 continue;
             }
             o.setAvatar(userInfo.getAvatar());
@@ -94,10 +110,14 @@ public class WebsiteSingleBlogService {
         return resp;
     }
 
-    // 根据ID获取博客内容
-    public WebsiteBlogList getBlogById(String id) throws Exception{
+    /**
+     * 根据ID获取博客内容
+     * @param id 博客ID
+     * @return WebsiteBlogList 博客实体
+     */
+    public WebsiteBlogList getBlogById(String id) throws Exception {
         WebsiteBlogList blog = websiteBlogListDao.selectById(id);
-        if(blog == null){
+        if (blog == null) {
             throw new DatabaseDataNotFound("数据未找到");
         }
         WebsiteUserInfo websiteUserInfo = websiteUserInfoDao.selectById(blog.getUserId());
@@ -108,19 +128,45 @@ public class WebsiteSingleBlogService {
         return blog;
     }
 
-    // 发表博客评论
-    public WebsiteBlogReplyEntity addReply(WebsiteBlogReplyEntity input, String token) throws Exception{
-
-//        WebsiteBlogReplyEntity reply = new WebsiteBlogReplyEntity();
-//        reply.setContent(input.getContent());
-//        reply.setArticleId(input.getArticleId());
-//        reply.setUserId(input.getUserId());
+    /**
+     * 发表博客评论
+     * @param input 博客评论实体
+     * @param token TOKEN
+     * @return WebsiteBlogReplyEntity 博客评论实体
+     */
+    public WebsiteBlogReplyEntity addReply(WebsiteBlogReplyEntity input, String token) throws Exception {
         String id = tokenRedisHandler.getIdByToken(token);
         input.setUserId(id);
         int i = websiteBlogReplyEntityDao.insert(input);
-        if(i != 1){
+        if (i != 1) {
             throw new DatabaseHandlerException("数据库执行插入的时候出现错误力");
         }
         return input;
     }
+
+    /**
+     * <私有方法>将博客列表实体的user属性对应到用户实体
+     *
+     * @param records 没有用户实体的博客列表
+     * @return List<WebsiteBlogList> 有用户实体的博客列表
+     */
+    private List<WebsiteBlogList> getWebsiteBlogLists(List<WebsiteBlogList> records) {
+        // 使用Stream API对传入的records列表进行操作，提取出所有的userId，放入一个列表中
+        List<String> userIds = records.stream()
+                .map(WebsiteBlogList::getUserId)
+                .collect(Collectors.toList());
+
+        // 使用mybatis-plus的selectBatchIds方法，将上一步提取出来的userId列表作为参数，
+        // 一次性查询出对应的所有WebsiteUserInfo对象，放入一个列表中。
+        List<WebsiteUserInfo> users = websiteUserInfoDao.selectBatchIds(userIds);
+
+        // 将上一步查询出来的WebsiteUserInfo对象列表转化为Map对象，以id为键，对象本身为值，方便后续使用。
+        Map<String, WebsiteUserInfo> userMap = users.stream()
+                .collect(Collectors.toMap(WebsiteUserInfo::getId, Function.identity()));
+        for (WebsiteBlogList o : records) {
+            o.setUser(userMap.get(o.getUserId()));
+        }
+        return records;
+    }
+
 }

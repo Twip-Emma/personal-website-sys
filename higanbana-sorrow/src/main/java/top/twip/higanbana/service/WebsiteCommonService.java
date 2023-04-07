@@ -28,31 +28,41 @@ public class WebsiteCommonService {
     @Resource
     private TokenRedisHandler tokenRedisHandler;
 
-    // 获取所有全局评论
-    public List<WebsiteMessageEntity> getAllMessage() throws Exception{
-        try{
+    /**
+     * 获取所有网站留言
+     *
+     * @return List<WebsiteMessageEntity> 网站留言实体列表
+     */
+    public List<WebsiteMessageEntity> getAllMessage() throws Exception {
+        try {
             List<WebsiteMessageEntity> entities = websiteMessageEntityDao.selectList(null);
-            for(WebsiteMessageEntity o: entities){
+            for (WebsiteMessageEntity o : entities) {
                 WebsiteUserInfo userInfo = websiteUserInfoDao.selectById(o.getUserId());
-                if(userInfo == null){
+                if (userInfo == null) {
                     continue;
                 }
                 o.setAvatar(userInfo.getAvatar());
                 o.setNickname(userInfo.getNickname());
             }
             return entities;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new DatabaseHandlerException(e.getMessage());
         }
     }
 
 
-    // 发表全局评论
-    public WebsiteMessageEntity addMessage(WebsiteMessageEntity input, String token) throws Exception{
+    /**
+     * 新增网站留言
+     *
+     * @param input 网站留言实体
+     * @param token TOKEN
+     * @return WebsiteMessageEntity 网站留言实体
+     */
+    public WebsiteMessageEntity addMessage(WebsiteMessageEntity input, String token) throws Exception {
         String userId = tokenRedisHandler.getIdByToken(token);
         input.setUserId(userId);
         int i = websiteMessageEntityDao.insert(input);
-        if(i != 1){
+        if (i != 1) {
             throw new DatabaseHandlerException("数据库执行插入的时候出现错误力");
         }
         return input;
