@@ -1,5 +1,6 @@
 package top.twip.higanbana.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.val;
@@ -50,7 +51,9 @@ public class WebsiteSingleBlogService {
      */
     public List<WebsiteBlogList> getBlogListByPage(Integer page) {
         Page<WebsiteBlogList> objectPage = new Page<>(page, PageConstants.BlogListPageTotal);
-        List<WebsiteBlogList> records = websiteBlogListDao.selectPage(objectPage, null).getRecords();
+        LambdaQueryWrapper<WebsiteBlogList> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByDesc(WebsiteBlogList::getCtime);
+        List<WebsiteBlogList> records = websiteBlogListDao.selectPage(objectPage, wrapper).getRecords();
         return getWebsiteBlogLists(records);
     }
 
@@ -63,7 +66,8 @@ public class WebsiteSingleBlogService {
      */
     public List<WebsiteBlogList> getBlogListByName(Integer page, String name) {
         Integer startNum = PageConstants.BlogListPageTotal * (page - 1);
-        List<WebsiteBlogList> records = websiteBlogListDao.getBlogByName("%" + name + "%", startNum, PageConstants.BlogListPageTotal);
+        List<WebsiteBlogList> records = websiteBlogListDao
+                .getBlogByName("%" + name + "%", startNum, PageConstants.BlogListPageTotal);
         return getWebsiteBlogLists(records);
     }
 

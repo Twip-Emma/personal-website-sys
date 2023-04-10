@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface WebsiteBlogListDao extends BaseMapper<WebsiteBlogList> {
     // 分页查询 + 模糊查询
-    @Select("select * from website_blog_list where title like #{name} limit #{s},#{l};")
+    @Select("select * from website_blog_list where title like #{name} ORDER BY ctime desc limit #{s},#{l};")
     List<WebsiteBlogList> getBlogByName(String name, Integer s, Integer l);
 
     // 分页查询 + 模糊查询(查询个数)

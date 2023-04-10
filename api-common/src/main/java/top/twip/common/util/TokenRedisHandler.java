@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class TokenRedisHandler {
 
-    private static final Integer TOKEN_TIME = 1000*60*5; // 有效时间20秒
+    private static final Integer TOKEN_TIME = 1000*60*10; // 有效时间10分钟
 
     private static final String SIGN = "user";
 
