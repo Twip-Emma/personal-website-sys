@@ -1,6 +1,7 @@
 package top.twip.higanbana.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import feign.FeignException;
 import org.springframework.stereotype.Service;
 import top.twip.common.entity.user.WebsiteAvatarEntity;
 import top.twip.common.entity.user.WebsiteUserInfo;
@@ -158,5 +159,23 @@ public class WebsiteSingleUserService {
             resp.add(o);
         }
         return resp;
+    }
+
+    /**
+     * 根据token查询这个用户实体
+     * @param token TOKEN
+     * @return WebsiteUserInfo 用户实体
+     */
+    public WebsiteUserInfo getUserByToken(String token) throws Exception {
+        if (!tokenRedisHandler.validateToken(token)){
+            throw new BadRequestDataException("验证失败，token已过期！");
+        }
+        String userId = tokenRedisHandler.getIdByToken(token);
+        if (!tokenRedisHandler.validateToken(token)){
+            throw new DatabaseDataNotFound("查不到用户信息");
+        }
+        WebsiteUserInfo user = websiteUserInfoDao.selectById(userId);
+        user.setPass(null);
+        return user;
     }
 }

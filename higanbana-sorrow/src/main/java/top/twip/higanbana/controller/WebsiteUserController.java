@@ -89,13 +89,14 @@ public class WebsiteUserController {
     }
 
     /**
-     * 根据用户ID查询这个用户实体
-     * @param userId 用户ID
+     * 根据用户token查询用户实体
      * @return Object 用户实体
      */
-    @GetMapping("/getbyid")
-    public Object getWebsiteUserById(@RequestParam("userid")String userId)throws Exception{
-        return null;
+    @GetMapping("/getbytoken")
+    public Object getWebsiteUserById(HttpServletRequest request)throws Exception{
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        return DataFactory.success(SimpleData.class, "查询成功")
+                .parseData(websiteSingleUserService.getUserByToken(token));
     }
 
     /**
