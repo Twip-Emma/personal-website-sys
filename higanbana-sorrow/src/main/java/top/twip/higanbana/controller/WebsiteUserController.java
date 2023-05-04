@@ -114,8 +114,15 @@ public class WebsiteUserController {
      * @return Object 用户列表
      */
     @GetMapping("/getalluser")
-    public Object getAllUser() throws Exception{
+    public Object getAllUser(@RequestParam("page")Integer page) throws Exception{
         return DataFactory.success(SimpleData.class, "查询成功")
-                .parseData(websiteSingleUserService.getAllUser());
+                .parseData(websiteSingleUserService.getAllUser(page));
+    }
+
+
+    @GetMapping("getUserCount")
+    public Object getUserCount() {
+        return DataFactory.success(SimpleData.class, "查询成功")
+                .parseData(websiteSingleUserService.getUserCount());
     }
 }

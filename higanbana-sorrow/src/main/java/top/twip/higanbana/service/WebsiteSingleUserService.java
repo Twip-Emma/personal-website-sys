@@ -1,8 +1,10 @@
 package top.twip.higanbana.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import feign.FeignException;
 import org.springframework.stereotype.Service;
+import top.twip.common.constant.PageConstants;
 import top.twip.common.entity.user.WebsiteAvatarEntity;
 import top.twip.common.entity.user.WebsiteUserInfo;
 import top.twip.common.exception.BadRequestDataException;
@@ -38,22 +40,23 @@ public class WebsiteSingleUserService {
 
     /**
      * 用户登录
+     *
      * @param card 账号
      * @param pass 密码
      * @return WebsiteUserInfo 用户实体
      */
-    public WebsiteUserInfo userLogin(String card,String pass) throws Exception{
+    public WebsiteUserInfo userLogin(String card, String pass) throws Exception {
         WebsiteUserInfo one = websiteUserInfoDao.selectOne(new QueryWrapper<WebsiteUserInfo>()
                 .eq("card", card));
-        if (one == null){
+        if (one == null) {
             throw new BadRequestDataException("用户不存在，请注册");
         }
 
         // 判断用户密码是否正确
         Boolean a = bCryptHandler.ciphertextToPlaintext(pass, one.getPass());
-        if (!a){
+        if (!a) {
             throw new BadRequestDataException("密码错误，请重试");
-        }else {
+        } else {
             one.setToken(tokenRedisHandler.getToken(one));
             one.setPass(null);
             return one;
@@ -62,15 +65,16 @@ public class WebsiteSingleUserService {
 
     /**
      * 用户注册
+     *
      * @param nickname 昵称
-     * @param card 账户
-     * @param pass 密码
+     * @param card     账户
+     * @param pass     密码
      * @return WebsiteUserInfo 用户实体
      */
-    public WebsiteUserInfo userRegister(String nickname,String card,String pass) throws Exception{
+    public WebsiteUserInfo userRegister(String nickname, String card, String pass) throws Exception {
         WebsiteUserInfo one = websiteUserInfoDao.selectOne(new QueryWrapper<WebsiteUserInfo>()
                 .eq("card", card));
-        if (one != null){
+        if (one != null) {
             throw new BadRequestDataException("这个账号已经被注册了，请重试");
         }
 
@@ -83,13 +87,13 @@ public class WebsiteSingleUserService {
         user.setIsadmin(0);
 
         int i = websiteUserInfoDao.insert(user);
-        if (i != 1){
+        if (i != 1) {
             throw new DatabaseHandlerException("数据库执行插入的时候出现错误力");
         }
 
         one = websiteUserInfoDao.selectOne(new QueryWrapper<WebsiteUserInfo>()
                 .eq("card", card));
-        if(one == null){
+        if (one == null) {
             throw new DatabaseHandlerException("数据库执行插入的时候出现错误力");
         }
         one.setToken(tokenRedisHandler.getToken(one));
@@ -99,20 +103,21 @@ public class WebsiteSingleUserService {
 
     /**
      * 修改用户信息
-     * @param user 用户实体
+     *
+     * @param user  用户实体
      * @param token TOKEN
      * @return WebsiteUserInfo 用户实体
      */
-    public WebsiteUserInfo updateUser(WebsiteUserInfo user, String token) throws Exception{
+    public WebsiteUserInfo updateUser(WebsiteUserInfo user, String token) throws Exception {
         String userId = tokenRedisHandler.getIdByToken(token);
         user.setId(userId);
 
         WebsiteUserInfo byId = websiteUserInfoDao.selectById(user.getId());
-        if (byId == null){
+        if (byId == null) {
             throw new DatabaseDataNotFound("数据未找到");
         }
         int i = websiteUserInfoDao.updateById(user);
-        if (i != 1){
+        if (i != 1) {
             throw new DatabaseHandlerException("数据库执行修改操作失败了");
         }
         byId = websiteUserInfoDao.selectById(user.getId());
@@ -122,56 +127,70 @@ public class WebsiteSingleUserService {
 
     /**
      * 删除用户
+     *
      * @param id 用户ID
      * @return Boolean 是否删除成功
      */
-    public Boolean deleteUser(String id){
+    public Boolean deleteUser(String id) {
         int i = websiteUserInfoDao.delete(new QueryWrapper<WebsiteUserInfo>()
                 .eq("id", id));
-        if(i != 1){
+        if (i != 1) {
             return false;
-        }else {
+        } else {
             return true;
         }
     }
 
     /**
      * 查询头像列表
+     *
      * @return List<WebsiteAvatarEntity> 头像实体列表
      */
-    public List<WebsiteAvatarEntity> getAllAvatar() throws Exception{
+    public List<WebsiteAvatarEntity> getAllAvatar() throws Exception {
         try {
             return websiteAvatarDao.selectList(null);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new DatabaseHandlerException("数据库查询的时候出错力");
         }
     }
 
     /**
      * 查询所有用户信息
+     *
      * @return List<WebsiteUserInfo> 用户信息实体
      */
-    public List<WebsiteUserInfo> getAllUser(){
-        List<WebsiteUserInfo> websiteUserInfos = websiteUserInfoDao.selectList(null);
+    public List<WebsiteUserInfo> getAllUser(Integer page) {
+        Page<WebsiteUserInfo> objectPage = new Page<>(page, PageConstants.UserListPageTotal);
+        List<WebsiteUserInfo> websiteUserInfos = websiteUserInfoDao.selectPage(objectPage, null).getRecords();
         List<WebsiteUserInfo> resp = new ArrayList<>();
-        for(WebsiteUserInfo o: websiteUserInfos){
+        for (WebsiteUserInfo o : websiteUserInfos) {
             o.setPass(null);
             resp.add(o);
         }
         return resp;
     }
 
+
+    /**
+     * 查询所有用户数量
+     * @return Integer 数量
+     */
+    public Integer getUserCount() {
+        return websiteUserInfoDao.selectCount(null);
+    }
+
     /**
      * 根据token查询这个用户实体
+     *
      * @param token TOKEN
      * @return WebsiteUserInfo 用户实体
      */
     public WebsiteUserInfo getUserByToken(String token) throws Exception {
-        if (!tokenRedisHandler.validateToken(token)){
+        if (!tokenRedisHandler.validateToken(token)) {
             throw new BadRequestDataException("验证失败，token已过期！");
         }
         String userId = tokenRedisHandler.getIdByToken(token);
-        if (!tokenRedisHandler.validateToken(token)){
+        if (!tokenRedisHandler.validateToken(token)) {
             throw new DatabaseDataNotFound("查不到用户信息");
         }
         WebsiteUserInfo user = websiteUserInfoDao.selectById(userId);
