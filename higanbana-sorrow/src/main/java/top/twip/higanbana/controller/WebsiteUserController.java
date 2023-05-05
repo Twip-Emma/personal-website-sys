@@ -69,6 +69,18 @@ public class WebsiteUserController {
                 .parseData(websiteSingleUserService.updateUser(websiteUserInfo, token));
     }
 
+
+    /**
+     * 更新用户信息
+     * @param websiteUserInfo 用户实体
+     * @return Object 用户实体
+     */
+    @PostMapping("updatealluser")
+    public Object updateAllUser(@RequestBody WebsiteUserInfo websiteUserInfo) throws Exception{
+        return DataFactory.success(SimpleData.class, "注册成功")
+                .parseData(websiteSingleUserService.updateAllUser(websiteUserInfo));
+    }
+
     /**
      * 删除一个用户
      * @param websiteUserInfo 用户实体

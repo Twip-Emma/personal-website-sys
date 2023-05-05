@@ -126,6 +126,26 @@ public class WebsiteSingleUserService {
     }
 
     /**
+     * 修改用户信息（管理员界面）
+     *
+     * @param user  用户实体
+     * @return WebsiteUserInfo 用户实体
+     */
+    public WebsiteUserInfo updateAllUser(WebsiteUserInfo user) throws Exception {
+        WebsiteUserInfo byId = websiteUserInfoDao.selectById(user.getId());
+        if (byId == null) {
+            throw new DatabaseDataNotFound("数据未找到");
+        }
+        int i = websiteUserInfoDao.updateById(user);
+        if (i != 1) {
+            throw new DatabaseHandlerException("数据库执行修改操作失败了");
+        }
+        byId = websiteUserInfoDao.selectById(user.getId());
+        byId.setPass(null);
+        return byId;
+    }
+
+    /**
      * 删除用户
      *
      * @param id 用户ID
