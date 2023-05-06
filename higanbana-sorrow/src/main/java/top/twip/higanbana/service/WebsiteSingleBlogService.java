@@ -96,7 +96,7 @@ public class WebsiteSingleBlogService {
      */
     public List<WebsiteBlogReplyEntity> getReplyListById(String blogId) {
         List<WebsiteBlogReplyEntity> entities = websiteBlogReplyEntityDao.selectList(new QueryWrapper<WebsiteBlogReplyEntity>()
-                .eq("article_id", blogId));
+                .eq("article_id", blogId).orderByDesc("ctime"));
 
         List<WebsiteBlogReplyEntity> resp = new ArrayList<>();
         for (WebsiteBlogReplyEntity o : entities) {
