@@ -33,6 +33,12 @@ public class MemeInfoService {
         return memeInfoDao.selectList(null);
     }
 
+    /**
+     * 查询一个赞的绑定情况
+     * @param memeId
+     * @param token
+     * @return
+     */
     public MemeLikeBind queryLike(String memeId, String token) {
         String userId = tokenRedisHandler.getIdByToken(token);
         return memeLikeDao.selectOne(new QueryWrapper<MemeLikeBind>()
