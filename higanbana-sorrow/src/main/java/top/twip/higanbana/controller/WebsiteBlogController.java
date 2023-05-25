@@ -101,6 +101,10 @@ public class WebsiteBlogController {
                 .parseData(websiteSingleBlogService.getBlogById(blogId));
     }
 
+    /**
+     * 新增博客
+     * @param blog 博客实体
+     */
     @PostMapping("/add")
     public Object addBlog(@RequestBody WebsiteBlogList blog,
                           HttpServletRequest request) {
@@ -108,4 +112,38 @@ public class WebsiteBlogController {
         return DataFactory.success(SimpleData.class, "添加成功")
                 .parseData(websiteSingleBlogService.addBlog(blog, token));
     }
+
+    /**
+     * 获取个人博客分区数据（饼图用）
+     */
+    @GetMapping("getBlogCountData")
+    public Object getBlogCountData(HttpServletRequest request) {
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        return DataFactory.success(SimpleData.class, "查询成功")
+                .parseData(websiteSingleBlogService.getBlogCountsByUserId(token));
+    }
+
+
+    /**
+     * 获取某个人的所有博客信息
+     */
+    @GetMapping("queryBlogListByUser")
+    public Object queryBlogListByUser(HttpServletRequest request) {
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        return DataFactory.success(SimpleData.class, "查询成功")
+                .parseData(websiteSingleBlogService.queryBlogListByUser(token));
+    }
+
+
+    /**
+     * 根据博客ID修改博客（用户）
+     */
+    @PostMapping("updateBlogByUser")
+    public Object updateBlogByUser(@RequestBody WebsiteBlogList blog,
+                                   HttpServletRequest request) throws Exception {
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        websiteSingleBlogService.updateBlogByUser(blog, token);
+        return DataFactory.success(SimpleData.class, "查询成功");
+    }
 }
+

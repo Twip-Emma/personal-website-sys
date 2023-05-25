@@ -10,6 +10,7 @@ import top.twip.common.entity.blog.WebsiteBlogList;
 import top.twip.common.entity.blog.WebsiteBlogReplyEntity;
 import top.twip.common.entity.blog.WebsiteMessageEntity;
 import top.twip.common.entity.user.WebsiteUserInfo;
+import top.twip.common.exception.BadRequestDataException;
 import top.twip.common.exception.DatabaseDataNotFound;
 import top.twip.common.exception.DatabaseHandlerException;
 import top.twip.common.util.TokenRedisHandler;
@@ -189,5 +190,40 @@ public class WebsiteSingleBlogService {
     private WebsiteBlogList getStringByBytes(WebsiteBlogList blog) {
         blog.setContent(new String(blog.getContentBytes()));
         return blog;
+    }
+
+
+    /**
+     * 获取个人博客分区数据（饼图用）
+     * @param token TOKEN
+     * @return Map<String, Object> 数据
+     */
+    public Map<String, Object> getBlogCountsByUserId(String token) {
+        String userId = tokenRedisHandler.getIdByToken(token);
+        List<Map<String, Object>> data = websiteBlogListDao.getBlogCountsByUserId(userId);
+        return data.get(0);
+    }
+
+
+    /**
+     * 获取这个用户下的所有博客
+     * @param token TOKEN
+     * @return List<WebsiteBlogList> 这个用户下的所有博客
+     */
+    public List<WebsiteBlogList> queryBlogListByUser(String token) {
+        String userId = tokenRedisHandler.getIdByToken(token);
+        return websiteBlogListDao.selectList(new QueryWrapper<WebsiteBlogList>()
+                .eq("user_id", userId)
+                .orderByDesc("ctime"));
+    }
+
+
+    public void updateBlogByUser(WebsiteBlogList blog, String token) throws Exception {
+        String userId = tokenRedisHandler.getIdByToken(token);
+        WebsiteBlogList re = websiteBlogListDao.selectById(blog.getId());
+        if (!userId.equals(re.getUserId())){
+            throw new BadRequestDataException("你不能修改其他人的博客");
+        }
+        websiteBlogListDao.updateById(blog);
     }
 }
