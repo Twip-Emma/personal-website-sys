@@ -179,9 +179,16 @@ public class WebsiteSingleUserService {
      *
      * @return List<WebsiteUserInfo> 用户信息实体
      */
-    public List<WebsiteUserInfo> getAllUser(Integer page) {
+    public List<WebsiteUserInfo> getAllUser(Integer page, String name) {
         Page<WebsiteUserInfo> objectPage = new Page<>(page, PageConstants.UserListPageTotal);
-        List<WebsiteUserInfo> websiteUserInfos = websiteUserInfoDao.selectPage(objectPage, null).getRecords();
+        QueryWrapper<WebsiteUserInfo> queryWrapper = new QueryWrapper<>();
+
+        // 根据名称模糊查询
+        if (name != null && !name.isEmpty()) {
+            queryWrapper.like("nickname", name);
+        }
+
+        List<WebsiteUserInfo> websiteUserInfos = websiteUserInfoDao.selectPage(objectPage, queryWrapper).getRecords();
         List<WebsiteUserInfo> resp = new ArrayList<>();
         for (WebsiteUserInfo o : websiteUserInfos) {
             o.setPass(null);
@@ -193,10 +200,15 @@ public class WebsiteSingleUserService {
 
     /**
      * 查询所有用户数量
+     * @param name 昵称
      * @return Integer 数量
      */
-    public Integer getUserCount() {
-        return websiteUserInfoDao.selectCount(null);
+    public Integer getUserCount(String name) {
+        QueryWrapper<WebsiteUserInfo> queryWrapper = new QueryWrapper<>();
+        if (name != null) {
+            queryWrapper.like("nickname", name);
+        }
+        return websiteUserInfoDao.selectCount(queryWrapper);
     }
 
     /**
@@ -216,5 +228,16 @@ public class WebsiteSingleUserService {
         WebsiteUserInfo user = websiteUserInfoDao.selectById(userId);
         user.setPass(null);
         return user;
+    }
+
+
+    public void updateUserPermission(String token, String targetId, Integer targetPermission) throws Exception {
+        if(!tokenRedisHandler.isSuper(token)){
+            throw new BadRequestDataException("权限不足，需要超级管理员权限");
+        }
+        WebsiteUserInfo user = new WebsiteUserInfo();
+        user.setId(targetId);
+        user.setIsadmin(targetPermission);
+        websiteUserInfoDao.updateById(user);
     }
 }

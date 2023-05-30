@@ -5,7 +5,9 @@ import top.twip.common.constant.CurrencyConstants;
 import top.twip.common.entity.user.UserInfo;
 import top.twip.common.entity.user.WebsiteUserInfo;
 import top.twip.common.enums.CodeEnum;
+import top.twip.common.response.BaseData;
 import top.twip.common.response.DataFactory;
+import top.twip.common.response.ListData;
 import top.twip.common.response.SimpleData;
 import top.twip.common.util.TokenHandler;
 import top.twip.higanbana.service.WebsiteSingleUserService;
@@ -126,15 +128,35 @@ public class WebsiteUserController {
      * @return Object 用户列表
      */
     @GetMapping("/getalluser")
-    public Object getAllUser(@RequestParam("page")Integer page) throws Exception{
-        return DataFactory.success(SimpleData.class, "查询成功")
-                .parseData(websiteSingleUserService.getAllUser(page));
+    public Object getAllUser(@RequestParam("page")Integer page,
+                             @RequestParam(value = "name", required = false)String name) throws Exception{
+//        return DataFactory.success(ListData.class, "查询成功")
+//                .parseData(websiteSingleUserService.getAllUser(page))
+//                .parseData(websiteSingleUserService.getUserCount());
+        BaseData R = DataFactory.success(ListData.class, "查询成功")
+                .parseData(websiteSingleUserService.getAllUser(page, name));
+        if (name != null && !name.isEmpty()){
+            R.parseData(websiteSingleUserService.getUserCount(name));
+        } else {
+            R.parseData(websiteSingleUserService.getUserCount(null));
+        }
+        return R;
     }
 
 
     @GetMapping("getUserCount")
     public Object getUserCount() {
         return DataFactory.success(SimpleData.class, "查询成功")
-                .parseData(websiteSingleUserService.getUserCount());
+                .parseData(websiteSingleUserService.getUserCount(null));
+    }
+
+
+    @GetMapping("updateUserPermission")
+    public Object updateUserPermission(@RequestParam("targetId")String targetId,
+                                       @RequestParam("targetPermission")Integer targetPermission,
+                                       HttpServletRequest request) throws Exception{
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        websiteSingleUserService.updateUserPermission(token, targetId, targetPermission);
+        return DataFactory.success(SimpleData.class, "修改成功");
     }
 }

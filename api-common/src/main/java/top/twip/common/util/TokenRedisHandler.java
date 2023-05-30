@@ -73,7 +73,22 @@ public class TokenRedisHandler {
             Jws<Claims> claimsJws = Jwts.parser().setSigningKey(SIGN).parseClaimsJws(token);
             Claims body = claimsJws.getBody();
             Integer admin = (Integer) body.get("admin");
-            if (admin == 1) {
+            if (admin >= 1) {
+                return true;
+            }
+        } catch (JwtException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    // 验证token中的admin字段是否为2
+    public boolean isSuper(String token) {
+        try {
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(SIGN).parseClaimsJws(token);
+            Claims body = claimsJws.getBody();
+            Integer admin = (Integer) body.get("admin");
+            if (admin == 2) {
                 return true;
             }
         } catch (JwtException ex) {
