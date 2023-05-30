@@ -4,7 +4,9 @@ import org.springframework.web.bind.annotation.*;
 import top.twip.common.constant.CurrencyConstants;
 import top.twip.common.entity.blog.WebsiteBlogList;
 import top.twip.common.entity.blog.WebsiteBlogReplyEntity;
+import top.twip.common.response.BaseData;
 import top.twip.common.response.DataFactory;
+import top.twip.common.response.ListData;
 import top.twip.common.response.SimpleData;
 import top.twip.higanbana.service.WebsiteSingleBlogService;
 
@@ -31,6 +33,24 @@ public class WebsiteBlogController {
     public Object getBlogListByPage(@RequestParam("page")Integer page){
         return DataFactory.success(SimpleData.class, "查询成功")
                 .parseData(websiteSingleBlogService.getBlogListByPage(page));
+    }
+
+    /**
+     * 分页查询博客列表（管理员界面）
+     * @param page 当前页码
+     * @return Object 符合条件的结果
+     */
+    @GetMapping("/queryAllBlog")
+    public Object queryAllBlog(@RequestParam("page")Integer page,
+                               @RequestParam(value = "name", required = false)String name){
+        BaseData R = DataFactory.success(ListData.class, "查询成功")
+                .parseData(websiteSingleBlogService.queryAllBlog(page, name));
+        if (name != null && !name.isEmpty()){
+            R.parseData(websiteSingleBlogService.getBlogListCountByName(name));
+        } else {
+            R.parseData(websiteSingleBlogService.getBlogTotalCount());
+        }
+        return R;
     }
 
     /**

@@ -58,6 +58,28 @@ public class WebsiteSingleBlogService {
         return getWebsiteBlogLists(records);
     }
 
+
+    /**
+     * 获取博客列表、分页查询（管理员界面）
+     *
+     * @param page 当前页码
+     * @return List<WebsiteBlogList> 博客列表
+     */
+    public List<WebsiteBlogList> queryAllBlog(Integer page, String name) {
+        Page<WebsiteBlogList> objectPage = new Page<>(page, 10);
+        LambdaQueryWrapper<WebsiteBlogList> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByDesc(WebsiteBlogList::getCtime);
+
+        // 根据名称模糊查询
+        if (name != null && !name.isEmpty()) {
+            wrapper.like(WebsiteBlogList::getTitle, name);
+        }
+
+        List<WebsiteBlogList> records = websiteBlogListDao.selectPage(objectPage, wrapper).getRecords();
+        return getWebsiteBlogLists(records);
+    }
+
+
     /**
      * 获取博客列表、分页+模糊查询
      *
@@ -222,7 +244,9 @@ public class WebsiteSingleBlogService {
         String userId = tokenRedisHandler.getIdByToken(token);
         WebsiteBlogList re = websiteBlogListDao.selectById(blog.getId());
         if (!userId.equals(re.getUserId())){
-            throw new BadRequestDataException("你不能修改其他人的博客");
+            if (!tokenRedisHandler.isAdmin(token)){
+                throw new BadRequestDataException("你不能修改其他人的博客");
+            }
         }
         websiteBlogListDao.updateById(blog);
     }
