@@ -71,6 +71,6 @@ public class WebsiteGlobalController {
                                 HttpServletRequest request) throws Exception{
         String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
         websiteCommonService.deleteMessage(id, token);
-        return DataFactory.success(SimpleData.class,"查询成功");
+        return DataFactory.success(SimpleData.class,"删除成功");
     }
 }

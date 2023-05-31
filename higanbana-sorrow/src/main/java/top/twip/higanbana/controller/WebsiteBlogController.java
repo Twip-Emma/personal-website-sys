@@ -165,5 +165,17 @@ public class WebsiteBlogController {
         websiteSingleBlogService.updateBlogByUser(blog, token);
         return DataFactory.success(SimpleData.class, "查询成功");
     }
+
+    /**
+     * 删除一个网站留言
+     * @param id 网站留言ID
+     */
+    @GetMapping("/deleteBlog")
+    public Object deleteBlog(@RequestParam("id") String id,
+                                HttpServletRequest request) throws Exception{
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        websiteSingleBlogService.deleteBlog(id, token);
+        return DataFactory.success(SimpleData.class,"删除成功");
+    }
 }
 

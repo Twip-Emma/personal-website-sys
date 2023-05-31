@@ -250,4 +250,16 @@ public class WebsiteSingleBlogService {
         }
         websiteBlogListDao.updateById(blog);
     }
+
+    /**
+     * 删除一个博客
+     * @param id 博客ID
+     * @param token TOKEN
+     */
+    public void deleteBlog(String id, String token) throws Exception {
+        if(!tokenRedisHandler.isAdmin(token)) {
+            throw new BadRequestDataException("权限不足，需要管理员权限");
+        }
+        websiteBlogListDao.deleteById(id);
+    }
 }

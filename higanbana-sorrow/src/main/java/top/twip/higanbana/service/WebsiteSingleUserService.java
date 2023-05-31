@@ -240,4 +240,17 @@ public class WebsiteSingleUserService {
         user.setIsadmin(targetPermission);
         websiteUserInfoDao.updateById(user);
     }
+
+
+    /**
+     * 删除一个用户
+     * @param id 博客ID
+     * @param token TOKEN
+     */
+    public void deleteUser(String id, String token) throws Exception {
+        if(!tokenRedisHandler.isAdmin(token)) {
+            throw new BadRequestDataException("权限不足，需要管理员权限");
+        }
+        websiteUserInfoDao.deleteById(id);
+    }
 }

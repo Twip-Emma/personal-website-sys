@@ -159,4 +159,17 @@ public class WebsiteUserController {
         websiteSingleUserService.updateUserPermission(token, targetId, targetPermission);
         return DataFactory.success(SimpleData.class, "修改成功");
     }
+
+
+    /**
+     * 删除一用户
+     * @param id 网站留言ID
+     */
+    @GetMapping("/deleteUser")
+    public Object deleteUser(@RequestParam("id") String id,
+                             HttpServletRequest request) throws Exception{
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        websiteSingleUserService.deleteUser(id, token);
+        return DataFactory.success(SimpleData.class,"删除成功");
+    }
 }
