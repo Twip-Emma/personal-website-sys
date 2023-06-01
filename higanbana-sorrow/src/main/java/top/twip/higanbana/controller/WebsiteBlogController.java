@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import top.twip.common.constant.CurrencyConstants;
 import top.twip.common.entity.blog.WebsiteBlogList;
 import top.twip.common.entity.blog.WebsiteBlogReplyEntity;
+import top.twip.common.entity.blog.WebsiteMessageEntity;
 import top.twip.common.response.BaseData;
 import top.twip.common.response.DataFactory;
 import top.twip.common.response.ListData;
@@ -93,9 +94,12 @@ public class WebsiteBlogController {
      * @return Object 博客的评论列表
      */
     @GetMapping("/selectblogreplybyid")
-    public Object getBlogReplyById(@RequestParam("blogid")String blogId){
-        return DataFactory.success(SimpleData.class, "查询成功")
-                .parseData(websiteSingleBlogService.getReplyListById(blogId));
+    public Object getBlogReplyById(@RequestParam("blogid")String blogId,
+                                   @RequestParam("page")Integer page,
+                                   @RequestParam(value = "text", required = false)String text){
+        return DataFactory.success(ListData.class, "查询成功")
+                .parseData(websiteSingleBlogService.getReplyListById(blogId, page, text))
+                .parseData(websiteSingleBlogService.getBlogReplyCount(blogId, text));
     }
 
     /**
@@ -189,6 +193,45 @@ public class WebsiteBlogController {
         String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
         websiteSingleBlogService.deleteBlogByUser(id, token);
         return DataFactory.success(SimpleData.class,"删除成功");
+    }
+
+
+    /**
+     * 删除一个博客（管理员操作）
+     * @param blogId 博客ID
+     */
+    @GetMapping("deleteBlogReplyByAdmin")
+    public Object deleteBlogReplyByAdmin(@RequestParam("id")String blogId,
+                                         HttpServletRequest request) throws Exception {
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        websiteSingleBlogService.deleteBlogReplyByAdmin(blogId, token);
+        return DataFactory.success(SimpleData.class,"删除成功");
+    }
+
+
+    /**
+     * 删除一个博客（用户操作）
+     * @param blogId 博客ID
+     */
+    @GetMapping("deleteBlogReplyByUser")
+    public Object deleteBlogReplyByUser(@RequestParam("id")String blogId,
+                                         HttpServletRequest request) throws Exception {
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        websiteSingleBlogService.deleteBlogReplyByUser(blogId, token);
+        return DataFactory.success(SimpleData.class,"删除成功");
+    }
+
+
+    /**
+     * 修改一个网站留言
+     * @param input 博客回复实体
+     */
+    @PostMapping("/updateBlogReply")
+    public Object updateBlogReply(@RequestBody WebsiteBlogReplyEntity input,
+                                HttpServletRequest request) throws Exception{
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        websiteSingleBlogService.updateBlogReply(input, token);
+        return DataFactory.success(SimpleData.class,"修改成功");
     }
 }
 

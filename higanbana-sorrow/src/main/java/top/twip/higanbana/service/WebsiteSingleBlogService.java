@@ -117,9 +117,18 @@ public class WebsiteSingleBlogService {
      * @param blogId 博客ID
      * @return List<WebsiteBlogReplyEntity> 评论实体列表
      */
-    public List<WebsiteBlogReplyEntity> getReplyListById(String blogId) {
-        List<WebsiteBlogReplyEntity> entities = websiteBlogReplyEntityDao.selectList(new QueryWrapper<WebsiteBlogReplyEntity>()
-                .eq("article_id", blogId).orderByDesc("ctime"));
+    public List<WebsiteBlogReplyEntity> getReplyListById(String blogId, Integer page, String text) {
+        Page<WebsiteBlogReplyEntity> objectPage = new Page<>(page, 10);
+        QueryWrapper<WebsiteBlogReplyEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("article_id", blogId).orderByDesc("ctime");
+
+        if (text != null && !"".equals(text)) {
+            wrapper.like("content", text);
+        }
+
+        wrapper.orderByDesc("ctime");
+        Page<WebsiteBlogReplyEntity> pageResult = websiteBlogReplyEntityDao.selectPage(objectPage, wrapper);
+        List<WebsiteBlogReplyEntity> entities = pageResult.getRecords();
 
         List<WebsiteBlogReplyEntity> resp = new ArrayList<>();
         for (WebsiteBlogReplyEntity o : entities) {
@@ -133,6 +142,23 @@ public class WebsiteSingleBlogService {
         }
         return resp;
     }
+
+
+    /**
+     * 查询所有网站评论数量
+     * @param blogId 博客ID
+     * @param text 文本
+     * @return Integer 数量
+     */
+    public Integer getBlogReplyCount(String blogId, String text) {
+        QueryWrapper<WebsiteBlogReplyEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("article_id", blogId).orderByDesc("ctime");
+        if (text != null) {
+            queryWrapper.like("content", text);
+        }
+        return websiteBlogReplyEntityDao.selectCount(queryWrapper);
+    }
+
 
     /**
      * 根据ID获取博客内容
@@ -278,5 +304,60 @@ public class WebsiteSingleBlogService {
             }
         }
         websiteBlogListDao.deleteById(id);
+    }
+
+
+    /**
+     * 删除网站留言（管理员操作）
+     *
+     * @param id 网站留言ID
+     * @param token TOKEN
+     * @return WebsiteMessageEntity 网站留言实体
+     */
+    public void deleteBlogReplyByAdmin(String id, String token) throws Exception {
+        if(!tokenRedisHandler.isAdmin(token)) {
+            throw new BadRequestDataException("权限不足，需要管理员权限");
+        }
+        websiteBlogReplyEntityDao.deleteById(id);
+    }
+
+
+    /**
+     * 删除网站留言（用户操作）
+     *
+     * @param id 网站留言ID
+     * @param token TOKEN
+     * @return WebsiteMessageEntity 网站留言实体
+     */
+    public void deleteBlogReplyByUser(String id, String token) throws Exception {
+        String userId = tokenRedisHandler.getIdByToken(token);
+        WebsiteBlogReplyEntity reply = websiteBlogReplyEntityDao.selectById(id);
+        if (!userId.equals(reply.getUserId())) {
+            throw new BadRequestDataException("你不能修改修改别人的评论");
+        }
+        websiteBlogReplyEntityDao.deleteById(id);
+    }
+
+
+    /**
+     * 修改博客评论
+     *
+     * @param input 网站留言实体
+     * @param token TOKEN
+     * @return WebsiteMessageEntity 网站留言实体
+     */
+    public void updateBlogReply(WebsiteBlogReplyEntity input, String token) throws Exception {
+        String userId = tokenRedisHandler.getIdByToken(token);
+        WebsiteBlogReplyEntity reply = websiteBlogReplyEntityDao.selectById(input.getId());
+
+        if (tokenRedisHandler.isAdmin(token)) {
+            // 管理员权限修改
+            websiteBlogReplyEntityDao.updateById(input);
+        } else if (userId.equals(reply.getUserId())) {
+            // 用户修改自己的评论
+            websiteBlogReplyEntityDao.updateById(input);
+        } else {
+            throw new BadRequestDataException("权限不足，无法删除评论");
+        }
     }
 }
