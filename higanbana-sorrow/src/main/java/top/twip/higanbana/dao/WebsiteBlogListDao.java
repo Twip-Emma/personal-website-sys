@@ -25,10 +25,10 @@ public interface WebsiteBlogListDao extends BaseMapper<WebsiteBlogList> {
     @Select(" SELECT" +
             "    COUNT(*) AS total_blogs," +
             "    (SELECT SUM(views) FROM website_blog_list WHERE user_id = #{userId}) AS total_views,"+
-            "    SUM(CASE WHEN type_name = '项目开发' THEN 1 ELSE 0 END) AS project_count, "+
-            "    SUM(CASE WHEN type_name = '知识发现' THEN 1 ELSE 0 END) AS knowledge_count," +
-            "    SUM(CASE WHEN type_name = '日常生活' THEN 1 ELSE 0 END) AS daily_count," +
-            "    SUM(CASE WHEN type_name = '学习笔记' THEN 1 ELSE 0 END) AS study_count" +
+            "    SUM(CASE WHEN flag = '项目开发' THEN 1 ELSE 0 END) AS project_count, "+
+            "    SUM(CASE WHEN flag = '知识分享' THEN 1 ELSE 0 END) AS knowledge_count," +
+            "    SUM(CASE WHEN flag = '日常生活' THEN 1 ELSE 0 END) AS daily_count," +
+            "    SUM(CASE WHEN flag = '学习笔记' THEN 1 ELSE 0 END) AS study_count" +
             " FROM" +
             "    website_blog_list" +
             " WHERE" +
