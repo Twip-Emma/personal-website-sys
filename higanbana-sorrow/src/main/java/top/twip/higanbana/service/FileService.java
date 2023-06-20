@@ -5,14 +5,25 @@ import org.springframework.web.multipart.MultipartFile;
 import top.twip.common.entity.file.BaseVO;
 import top.twip.common.entity.file.Constant;
 import top.twip.common.entity.file.FileVO;
+import top.twip.common.entity.user.WebsiteUserInfo;
 import top.twip.common.exception.BadRequestDataException;
 import top.twip.common.util.QiNiuUtil;
+import top.twip.common.util.TokenRedisHandler;
+import top.twip.higanbana.dao.WebsiteUserInfoDao;
 
+import javax.annotation.Resource;
 import java.io.FileInputStream;
 
 @Service
 public class FileService {
-    public BaseVO upload(MultipartFile file, String fileType) throws Exception {
+
+    @Resource
+    private TokenRedisHandler tokenRedisHandler;
+
+    @Resource
+    private WebsiteUserInfoDao websiteUserInfoDao;
+
+    public BaseVO upload(MultipartFile file, String fileType, String token) throws Exception {
         String fileName = file.getOriginalFilename();
         if (fileName == null) {
             throw new BadRequestDataException("传入的文件名不能为空");
@@ -29,6 +40,14 @@ public class FileService {
         }
         FileVO fileVO = new FileVO();
         fileVO.setDownloadUrl(url);
+
+        // 头像写入用户数据库
+        String userId = tokenRedisHandler.getIdByToken(token);
+        WebsiteUserInfo user = new WebsiteUserInfo();
+        user.setId(userId);
+        user.setAvatar(url);
+        websiteUserInfoDao.updateById(user);
+
         return fileVO;
     }
     /**

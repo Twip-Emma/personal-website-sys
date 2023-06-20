@@ -67,8 +67,17 @@ public class WebsiteUserController {
     public Object updateUser(@RequestBody WebsiteUserInfo websiteUserInfo,
                            HttpServletRequest request) throws Exception{
         String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
-        return DataFactory.success(SimpleData.class, "成功")
-                .parseData(websiteSingleUserService.updateUser(websiteUserInfo, token));
+        websiteSingleUserService.updateUser(websiteUserInfo, token);
+        return DataFactory.success(SimpleData.class, "成功");
+    }
+
+
+    @GetMapping("getUserInfo")
+    public Object getUserInfo(HttpServletRequest request) {
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        WebsiteUserInfo user = websiteSingleUserService.getUserInfo(token);
+        user.setToken(token);
+        return DataFactory.success(SimpleData.class, "成功").parseData(user);
     }
 
 
@@ -102,16 +111,6 @@ public class WebsiteUserController {
         }
     }
 
-    /**
-     * 根据用户token查询用户实体
-     * @return Object 用户实体
-     */
-    @GetMapping("/getbytoken")
-    public Object getWebsiteUserById(HttpServletRequest request)throws Exception{
-        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
-        return DataFactory.success(SimpleData.class, "查询成功")
-                .parseData(websiteSingleUserService.getUserByToken(token));
-    }
 
     /**
      * 查询所有头像

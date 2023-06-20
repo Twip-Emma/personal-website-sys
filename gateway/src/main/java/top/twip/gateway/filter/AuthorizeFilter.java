@@ -51,7 +51,8 @@ public class AuthorizeFilter implements GlobalFilter {
         if (reqUrlPath.equals("/higanbana/blog/user/login")
                 || reqUrlPath.contains("api")
                 || reqUrlPath.equals("/higanbana/blog/user/register")
-                || reqUrlPath.equals("/higanbana/meme/query")) {
+                || reqUrlPath.equals("/higanbana/meme/query")
+                || reqUrlPath.equals("/higanbana/file/upload/image")) {
             return chain.filter(exchange);
         } else if (reqUrlPath.equals("/higanbana/blog/user/getalluser")
                 || reqUrlPath.equals("/higanbana/api/addsetukey")

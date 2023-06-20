@@ -11,6 +11,7 @@ import com.qiniu.util.Auth;
 import top.twip.common.entity.file.Constant;
 
 import java.io.FileInputStream;
+import java.util.UUID;
 
 /**
  * Description:
@@ -38,7 +39,14 @@ public class QiNiuUtil {
             upToken = auth.uploadToken(Constant.bucketFileName);
             path = Constant.domainFile;
         }
-        Response response = uploadManager.put(file, "user-file/c.png", upToken, null, null);
+        UUID uuid = UUID.randomUUID();
+        Response response = uploadManager.put(
+                file,
+                "user-file/"+ uuid + ".png",
+                upToken,
+                null,
+                null
+        );
         // 解析上传成功的结果
         DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
         return path + putRet.key;

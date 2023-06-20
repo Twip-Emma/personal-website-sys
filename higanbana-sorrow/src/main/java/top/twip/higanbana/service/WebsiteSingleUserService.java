@@ -38,6 +38,17 @@ public class WebsiteSingleUserService {
     @Resource
     private TokenRedisHandler tokenRedisHandler;
 
+
+    /**
+     * 直接查询用户信息
+     * @param token TOKEN
+     * @return WebsiteUserInfo 用户信息
+     */
+    public WebsiteUserInfo getUserInfo(String token) {
+        String userId = tokenRedisHandler.getIdByToken(token);
+        return websiteUserInfoDao.selectById(userId);
+    }
+
     /**
      * 用户登录
      *
@@ -108,7 +119,7 @@ public class WebsiteSingleUserService {
      * @param token TOKEN
      * @return WebsiteUserInfo 用户实体
      */
-    public WebsiteUserInfo updateUser(WebsiteUserInfo user, String token) throws Exception {
+    public void updateUser(WebsiteUserInfo user, String token) throws Exception {
         String userId = tokenRedisHandler.getIdByToken(token);
         user.setId(userId);
 
@@ -120,9 +131,6 @@ public class WebsiteSingleUserService {
         if (i != 1) {
             throw new DatabaseHandlerException("数据库执行修改操作失败了");
         }
-        byId = websiteUserInfoDao.selectById(user.getId());
-        byId.setPass(null);
-        return byId;
     }
 
     /**
