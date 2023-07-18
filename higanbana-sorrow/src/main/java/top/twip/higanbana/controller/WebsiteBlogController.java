@@ -1,10 +1,13 @@
 package top.twip.higanbana.controller;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import top.twip.common.constant.CurrencyConstants;
+import top.twip.common.constant.FileSizeConstants;
 import top.twip.common.entity.blog.WebsiteBlogList;
 import top.twip.common.entity.blog.WebsiteBlogReplyEntity;
 import top.twip.common.entity.blog.WebsiteMessageEntity;
+import top.twip.common.exception.FileSizeExceededException;
 import top.twip.common.response.BaseData;
 import top.twip.common.response.DataFactory;
 import top.twip.common.response.ListData;
@@ -130,11 +133,15 @@ public class WebsiteBlogController {
      * @param blog 博客实体
      */
     @PostMapping("/add")
-    public Object addBlog(@RequestBody WebsiteBlogList blog,
-                          HttpServletRequest request) {
+    public Object addBlog(@RequestPart(value = "file", required = false) MultipartFile file,
+                          @RequestPart("blog") WebsiteBlogList blog,
+                          HttpServletRequest request) throws Exception {
+        if (file != null && file.getSize() > FileSizeConstants.BLOG_IMAGE_MAX_SIZE) {
+            throw new FileSizeExceededException("上传的文件大小限制为" + FileSizeConstants.BLOG_IMAGE_MAX_SIZE_NAME);
+        }
         String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
         return DataFactory.success(SimpleData.class, "添加成功")
-                .parseData(websiteSingleBlogService.addBlog(blog, token));
+                .parseData(websiteSingleBlogService.addBlog(file, blog, token));
     }
 
     /**

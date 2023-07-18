@@ -1,10 +1,14 @@
 package top.twip.higanbana.controller;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import top.twip.common.constant.CurrencyConstants;
+import top.twip.common.constant.FileSizeConstants;
+import top.twip.common.entity.file.Constant;
 import top.twip.common.entity.user.UserInfo;
 import top.twip.common.entity.user.WebsiteUserInfo;
 import top.twip.common.enums.CodeEnum;
+import top.twip.common.exception.FileSizeExceededException;
 import top.twip.common.response.BaseData;
 import top.twip.common.response.DataFactory;
 import top.twip.common.response.ListData;
@@ -170,5 +174,21 @@ public class WebsiteUserController {
         String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
         websiteSingleUserService.deleteUser(id, token);
         return DataFactory.success(SimpleData.class,"删除成功");
+    }
+
+
+    /**
+     * 修改用户头像
+     * @param file 文件流
+     */
+    @PostMapping(value = "/update/avatar")
+    public Object updateAvatar(@RequestBody MultipartFile file,
+                              HttpServletRequest request) throws Exception {
+        if (file.getSize() > FileSizeConstants.AVATAR_MAX_SIZE) {
+            throw new FileSizeExceededException("上传的文件大小限制为" + FileSizeConstants.AVATAR_MAX_SIZE_NAME);
+        }
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        return DataFactory.success(SimpleData.class, "上传成功")
+                .parseData(websiteSingleUserService.updateAvatar(file, token));
     }
 }

@@ -4,9 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import feign.FeignException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import top.twip.common.constant.PageConstants;
+import top.twip.common.entity.file.BaseVO;
+import top.twip.common.entity.file.Constant;
+import top.twip.common.entity.file.FileVO;
 import top.twip.common.entity.user.WebsiteAvatarEntity;
 import top.twip.common.entity.user.WebsiteUserInfo;
+import top.twip.common.enums.FileTypeEnum;
 import top.twip.common.exception.BadRequestDataException;
 import top.twip.common.exception.DatabaseDataNotFound;
 import top.twip.common.exception.DatabaseHandlerException;
@@ -37,6 +42,9 @@ public class WebsiteSingleUserService {
 
     @Resource
     private TokenRedisHandler tokenRedisHandler;
+
+    @Resource
+    private FileService fileService;
 
 
     /**
@@ -260,5 +268,24 @@ public class WebsiteSingleUserService {
             throw new BadRequestDataException("权限不足，需要管理员权限");
         }
         websiteUserInfoDao.deleteById(id);
+    }
+
+    /**
+     * 更新用户头像
+     * @param file 文件
+     * @param token TOKEN
+     * @return FileVO VO
+     */
+    public FileVO updateAvatar(MultipartFile file, String token) throws Exception {
+        // 上传图片，获取url
+        FileVO vo = fileService.upload(file, FileTypeEnum.IMAGE);
+
+        // 根据url更新进数据库
+        String userId = tokenRedisHandler.getIdByToken(token);
+        WebsiteUserInfo user = new WebsiteUserInfo();
+        user.setId(userId);
+        user.setAvatar(vo.getDownloadUrl());
+        websiteUserInfoDao.updateById(user);
+        return vo;
     }
 }

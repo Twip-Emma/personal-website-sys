@@ -5,11 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.val;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import top.twip.common.constant.PageConstants;
 import top.twip.common.entity.blog.WebsiteBlogList;
 import top.twip.common.entity.blog.WebsiteBlogReplyEntity;
 import top.twip.common.entity.blog.WebsiteMessageEntity;
+import top.twip.common.entity.file.FileVO;
 import top.twip.common.entity.user.WebsiteUserInfo;
+import top.twip.common.enums.FileTypeEnum;
 import top.twip.common.exception.BadRequestDataException;
 import top.twip.common.exception.DatabaseDataNotFound;
 import top.twip.common.exception.DatabaseHandlerException;
@@ -42,6 +45,9 @@ public class WebsiteSingleBlogService {
 
     @Resource
     private TokenRedisHandler tokenRedisHandler;
+
+    @Resource
+    private FileService fileService;
 
 
     /**
@@ -200,11 +206,24 @@ public class WebsiteSingleBlogService {
      * @param token TOKEN
      * @return Boolean 是否成功
      */
-    public Boolean addBlog(WebsiteBlogList blog, String token) {
+    public Boolean addBlog(
+            MultipartFile file,
+            WebsiteBlogList blog,
+            String token
+    ) throws Exception {
+        // 上传文件获取url
+        FileVO vo = new FileVO();
+        if (file != null) {
+            vo.setDownloadUrl(fileService.upload(file, FileTypeEnum.IMAGE).getDownloadUrl());
+        } else {
+            vo.setDownloadUrl(blog.getFirstPicture());
+        }
+
         String id = tokenRedisHandler.getIdByToken(token);
         blog.setUserId(id);
         blog.setViews(0);
         blog.setTypeColor("#59c9fb");
+        blog.setFirstPicture(vo.getDownloadUrl());
         blog.setContentBytes(blog.getContent().getBytes());
         int i = websiteBlogListDao.insert(blog);
         return i == 1;
