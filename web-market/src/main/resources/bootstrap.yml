@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: web-market-service # 服务名称
+  cloud:
+    #    nacos:
+    #      server-addr: 127.0.0.1:8848 # Nacos地址
+    #      config:
+    #        file-extension: yaml # 文件后缀名
+    consul: #Consul服务注册发现配置
+      host: 127.0.0.1
+      port: 8500
+      discovery:
+        service-name: ${spring.application.name}
+        heartbeat:
+          enabled: true
+      config:
+        # 是否启用配置中心，默认true
+        enabled: true
+        # 基本文件夹名称，默认config
+        prefix: config
+        # 使用应用的文件夹名称，默认值application，一般建议设置为微服务应用名称
+        default-context: webMarketService
+        # 分隔符，用于区分环境，环境可选default(什么后缀也不加),dev,test,prod，默认逗号
+        profile-separator: ','
+        # 配置文件格式
+        format: YAML
+        # 用哪个配置文件，Consul中的key/value对应整个配置文件
+        data-key: webMarketServiceConfig
+        # 是否开启配置文件刷新以及刷新时间，默认开启刷新1000毫秒
+        watch:
+          enabled: true
+          delay: 1000
+
+

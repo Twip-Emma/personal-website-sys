@@ -1,0 +1,21 @@
+# version: '3'
+# services:
+#   higanbana:
+#     entrypoint: ['java','-jar','/var/app.jar']
+#     network_mode: 'host'
+#     image: 'openjdk:15.0.2-oracle'
+#     environment:
+#       - TZ="Asia/shanghai"
+#     volumes:
+#       - ./higanbana-sorrow-1.0-SNAPSHOT.jar:/var/app.jar
+#     container_name: higanbana
+version: '3'
+
+services:
+  higanbana:
+    image: openjdk:15.0.2-oracle
+    container_name: higanbana
+    volumes:
+      - ./higanbana-sorrow-1.0-SNAPSHOT.jar:/var/app.jar
+    working_dir: /app
+    command: ["java", "-jar", "/var/app.jar"]
