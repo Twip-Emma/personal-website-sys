@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+import top.twip.api.constant.AdminConstants;
 import top.twip.api.constant.CurrencyConstants;
 import top.twip.api.util.TokenRedisHandler;
 
@@ -30,44 +31,57 @@ public class AuthorizeFilter implements GlobalFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
-        ServerHttpRequest request = exchange.getRequest();
-
         // 获取请求路径
+        ServerHttpRequest request = exchange.getRequest();
         String reqUrlPath = request.getURI().getPath();
-        System.out.println(reqUrlPath);
-        // 代替ip地址以token作为脚本判断依据
+
+        // 打印日志路径
+        System.out.println("请求路径: " + reqUrlPath);
+
+        // 获取请求头中的token
         String token = request.getHeaders().getFirst(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
 
-        // 判断是否是登录界面
-        if (reqUrlPath.equals("/blog/blog/user/login")
-                || reqUrlPath.contains("api")
-                || reqUrlPath.equals("/blog/blog/user/register")
-                || reqUrlPath.equals("/blog/meme/query")
-                || reqUrlPath.equals("/blog/file/upload/image")) {
-            return chain.filter(exchange);
-        } else if (reqUrlPath.equals("/blog/blog/user/getalluser")
-                || reqUrlPath.equals("/blog/api/addsetukey")
-                || reqUrlPath.equals("/blog/api/deletesetukey")) {
-            // 判断是否有管理员权限
-            try {
-                boolean i = tokenRedisHandler.isAdmin(token);
-                if (i) {
+        switch (reqUrlPath) {
+            // 直接放行的接口
+            case "/blog/blog/user/login", "/blog/blog/user/register", "/blog/meme/query" -> {
+                return chain.filter(exchange);
+            }
+
+            // 需要判断弱密钥的接口
+            case "/blog/image/getRandomImageByType" -> {
+                String salt = request.getHeaders().getFirst(AdminConstants.CURRENCY_HEADER_NAME.getValue());
+                if (AdminConstants.CURRENCY_HEADER_VALUE.getValue().equals(salt)) {
                     return chain.filter(exchange);
                 } else {
-                    exchange.getResponse().setStatusCode((HttpStatus.FORBIDDEN));
+                    exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
                 }
-            } catch (Exception e) {
-                exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
             }
-        } else {
-            // 不是登录/注册页面
-            boolean re = tokenRedisHandler.validateToken(token);
-            if (re) {
-                return chain.filter(exchange);
-            } else {
-                exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
+
+            // 其它接口，正常走流程验证token
+            default -> {
+                try {
+                    if (reqUrlPath.contains("api")) {
+                        exchange.getResponse().setStatusCode((HttpStatus.FORBIDDEN));
+                    } else if (isAdminPath(reqUrlPath) && tokenRedisHandler.isAdmin(token)) {
+                        return chain.filter(exchange);
+                    } else if (tokenRedisHandler.validateToken(token)) {
+                        return chain.filter(exchange);
+                    } else {
+                        exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
+                    }
+                } catch (Exception e) {
+                    exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
+                }
+                return exchange.getResponse().setComplete();
             }
         }
         return exchange.getResponse().setComplete();
+    }
+
+    // 判断是否是管理员相关路径
+    private boolean isAdminPath(String path) {
+        return path.equals("/blog/blog/user/getalluser") ||
+                path.equals("/blog/api/addsetukey") ||
+                path.equals("/blog/api/deletesetukey");
     }
 }
