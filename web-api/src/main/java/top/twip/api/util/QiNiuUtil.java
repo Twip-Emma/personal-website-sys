@@ -37,6 +37,9 @@ public class QiNiuUtil {
         } else if (fileType.equals(Constant.FILE)) {
             upToken = auth.uploadToken(Constant.bucketFileName);
             path = Constant.domainFile;
+        } else if (fileType.equals(Constant.MEME)) {
+            upToken = auth.uploadToken(Constant.bucketFileName);
+            path = Constant.domainFile;
         }
         UUID uuid = UUID.randomUUID();
         Response response = uploadManager.put(

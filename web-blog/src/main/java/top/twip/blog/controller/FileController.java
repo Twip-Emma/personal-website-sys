@@ -11,6 +11,7 @@ import top.twip.blog.service.FileService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/blog/file")
@@ -58,6 +59,29 @@ public class FileController {
                         Constant.IMAGE,
                         blog,
                         token
+                ));
+    }
+
+
+    /**
+     * 上传素材图片
+     * @param file
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @PostMapping(value = "/upload/meme")
+    public Object uploadMeme(
+            @RequestPart("file") MultipartFile file,
+            @RequestPart("title") String title,
+            HttpServletRequest request
+    ) throws Exception {
+        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        return Objects.requireNonNull(DataFactory.success(SimpleData.class, "上传成功"))
+                .parseData(fileService.uploadMeme(
+                        file,
+                        token,
+                        title
                 ));
     }
 }

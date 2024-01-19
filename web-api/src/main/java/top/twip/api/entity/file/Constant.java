@@ -12,6 +12,8 @@ public class Constant {
 
     public static final String FILE = "file";
 
+    public static final String MEME = "meme";
+
     /**
      * AccessKey
      */
