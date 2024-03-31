@@ -3,7 +3,6 @@ package top.twip.market.service;
 import org.springframework.stereotype.Component;
 import top.twip.market.dao.ProductInfoDao;
 import top.twip.api.entity.product.ProductInfo;
-import top.twip.api.entity.user.UserInfo;
 import top.twip.api.feign.HiganbanaClient;
 
 import javax.annotation.Resource;
