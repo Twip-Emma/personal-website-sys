@@ -1,8 +1,6 @@
 package top.twip.api.entity.meme;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 @Data
@@ -13,4 +11,8 @@ public class MemeInfo {
     private String imgUrl;
     private Integer likeNum;
     private String title;
+    @TableField(fill = FieldFill.INSERT)
+    private Long ctime;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Long mtime;
 }

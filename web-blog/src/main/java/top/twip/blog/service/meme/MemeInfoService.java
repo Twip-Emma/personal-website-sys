@@ -29,7 +29,10 @@ public class MemeInfoService {
      * @return meme列表
      */
     public List<MemeInfo> query(){
-        return memeInfoDao.selectList(null);
+        // 按照ctime子段排序
+        QueryWrapper<MemeInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("ctime");
+        return memeInfoDao.selectList(queryWrapper);
     }
 
     /**
