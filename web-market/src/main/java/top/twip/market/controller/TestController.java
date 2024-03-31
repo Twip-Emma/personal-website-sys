@@ -27,6 +27,6 @@ public class TestController {
 
     @GetMapping("/getAllProduct")
     public Object getAllProduct() {
-        return DataFactory.success(SimpleData.class, "查询成功").parseData(productService.getAllProduct());
+        return null;
     }
 }
