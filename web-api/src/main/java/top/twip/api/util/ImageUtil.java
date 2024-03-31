@@ -9,14 +9,9 @@ import java.io.*;
 import java.nio.file.Files;
 
 public class ImageUtil {
-    // 最大压缩次数
     private static final int MAX_COMPRESSION_TIMES = 10;
+    private static final long MAX_FILE_SIZE = 1024 * 1024; // 1MB
 
-    /**
-     * 循环压缩图片
-     * @param fis 要压缩的图片流
-     * @return 压缩后的图片流
-     */
     public static FileInputStream compressImage(FileInputStream fis) throws IOException {
         // 将FileInputStream转换为BufferedImage
         BufferedImage originalImage = ImageIO.read(new BufferedInputStream(fis));
@@ -24,8 +19,9 @@ public class ImageUtil {
         // 初始化输出流以便存储压缩后的图片
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
+        long fileSize = 0;
         // 开始压缩循环
-        for (int i = 0; i < MAX_COMPRESSION_TIMES && !(originalImage.getWidth() <= 1) && !(originalImage.getHeight() <= 1); i++) {
+        for (int i = 0; i < MAX_COMPRESSION_TIMES && fileSize < MAX_FILE_SIZE; i++) {
             // 计算压缩比例
             double scale = 0.5;
 
@@ -42,6 +38,9 @@ public class ImageUtil {
 
             // 将压缩后的图片写出到输出流
             ImageIO.write(scaledImage, "jpg", baos);
+
+            // 计算压缩后的图片文件大小
+            fileSize = baos.size();
 
             // 用新压缩过的图片替换原来的图片
             originalImage = scaledImage;
