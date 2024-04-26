@@ -1,5 +1,7 @@
 package top.twip.blog.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,17 +24,21 @@ import java.util.List;
 @RestController
 @RequestMapping("/blog/api")
 public class ApiController {
+
+    private final Logger logger = LoggerFactory.getLogger(ApiController.class);
     @Resource
     private ApiService apiService;
 
     /**
      * 根据KEY获取图片
-     * @param key KEY
+     *
+     * @param key      KEY
      * @param response 图片
      */
     @GetMapping("/setu")
-    public Object getSetu(@RequestParam("key")String key,
+    public Object getSetu(@RequestParam("key") String key,
                           HttpServletResponse response) {
+        logger.info("setu查询");
         try {
             Boolean aBoolean = apiService.checkKey1(key);
             if (aBoolean){
