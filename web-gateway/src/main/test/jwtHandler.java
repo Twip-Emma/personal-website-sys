@@ -20,8 +20,6 @@ public class jwtHandler {
                 // 签名
                 .signWith(SignatureAlgorithm.HS256, "user")
                 .compact();
-        System.out.println(token);
-        System.out.println("=============================");
         try {
             Thread.sleep(1000*1);
         } catch (InterruptedException e) {
@@ -30,7 +28,5 @@ public class jwtHandler {
         JwtParser parser = Jwts.parser();
         Jws<Claims> claimsJws = parser.setSigningKey("user").parseClaimsJws(token + "123123");
         Claims claims = claimsJws.getBody();
-        System.out.println(claims.get("card"));
-        System.out.println(claims.get("pass"));
     }
 }

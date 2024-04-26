@@ -1,5 +1,7 @@
 package top.twip.gateway.filter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +24,8 @@ import javax.annotation.Resource;
 @Configuration
 public class AuthorizeFilter implements GlobalFilter {
 
+    private final Logger logger = LoggerFactory.getLogger(AuthorizeFilter.class);
+
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
@@ -35,11 +39,9 @@ public class AuthorizeFilter implements GlobalFilter {
         ServerHttpRequest request = exchange.getRequest();
         String reqUrlPath = request.getURI().getPath();
 
-        // 打印日志路径
-        System.out.println("请求路径: " + reqUrlPath);
-
         // 获取请求头中的token
         String token = request.getHeaders().getFirst(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        logger.info("请求[路径={},TOKEN={}]", reqUrlPath, token);
 
         switch (reqUrlPath) {
             // 直接放行的接口

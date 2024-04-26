@@ -2,6 +2,8 @@ package top.twip.blog.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import top.twip.api.constant.PageConstants;
@@ -27,6 +29,9 @@ import java.util.List;
  */
 @Service
 public class WebsiteSingleUserService {
+
+    private final Logger logger = LoggerFactory.getLogger(WebsiteSingleUserService.class);
+
     @Resource
     private WebsiteUserInfoDao websiteUserInfoDao;
 
@@ -70,10 +75,12 @@ public class WebsiteSingleUserService {
         // 判断用户密码是否正确
         Boolean a = bCryptHandler.ciphertextToPlaintext(pass, one.getPass());
         if (!a) {
+            logger.info("用户登录-失败-密码错误[账号={}]", card);
             throw new BadRequestDataException("密码错误，请重试");
         } else {
             one.setToken(tokenRedisHandler.getToken(one));
             one.setPass(null);
+            logger.info("用户登录-成功[账号={},昵称={}]", one.getCard(), one.getNickname());
             return one;
         }
     }
@@ -90,11 +97,11 @@ public class WebsiteSingleUserService {
         WebsiteUserInfo one = websiteUserInfoDao.selectOne(new QueryWrapper<WebsiteUserInfo>()
                 .eq("card", card));
         if (one != null) {
+            logger.info("用户注册-失败-反复注册[账号={}]", card);
             throw new BadRequestDataException("这个账号已经被注册了，请重试");
         }
 
         String bpass = bCryptHandler.plaintextToCiphertext(pass);
-//        String bpass = pass;
         WebsiteUserInfo user = new WebsiteUserInfo();
         user.setCard(card);
         user.setPass(bpass);
@@ -103,16 +110,17 @@ public class WebsiteSingleUserService {
 
         int i = websiteUserInfoDao.insert(user);
         if (i != 1) {
-            throw new DatabaseHandlerException("数据库执行插入的时候出现错误力");
+            throw new DatabaseHandlerException("数据库执行插入的时候出现错误");
         }
 
         one = websiteUserInfoDao.selectOne(new QueryWrapper<WebsiteUserInfo>()
                 .eq("card", card));
         if (one == null) {
-            throw new DatabaseHandlerException("数据库执行插入的时候出现错误力");
+            throw new DatabaseHandlerException("数据库执行插入的时候出现错误");
         }
         one.setToken(tokenRedisHandler.getToken(one));
         one.setPass(null);
+        logger.info("用户注册-成功[账号={},昵称={}]", one.getCard(), one.getNickname());
         return one;
     }
 

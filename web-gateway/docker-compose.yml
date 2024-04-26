@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  gateway:
+    image: openjdk:15.0.2-oracle
+    container_name: gateway
+    volumes:
+      - ./cherry-blossoms-1.0-SNAPSHOT.jar:/var/app.jar
+    working_dir: /app
+    command: ["java", "-jar", "/var/app.jar"]

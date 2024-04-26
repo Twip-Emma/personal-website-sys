@@ -1,0 +1,23 @@
+# version: '3'
+# services:
+#   cherry:
+#     entrypoint: ['java','-jar','/var/app.jar']
+#     network_mode: 'host'
+#     image: 'openjdk:15.0.2-oracle'
+#     environment:
+#       - TZ="Asia/shanghai"
+#     volumes:
+#       - ./cherry-sorrow-1.0-SNAPSHOT.jar:/var/app.jar
+#     container_name: cherry
+
+
+version: '3'
+
+services:
+  cherry:
+    image: openjdk:15.0.2-oracle
+    container_name: cherry
+    volumes:
+      - ./cherry-sorrow-1.0-SNAPSHOT.jar:/var/app.jar
+    working_dir: /app
+    command: ["java", "-jar", "/var/app.jar"]

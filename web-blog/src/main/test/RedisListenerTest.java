@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import top.twip.blog.HiganbanaApplication;
+import top.twip.blog.WebBlogApplication;
 
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * @Date: 2022-05-18 11:35
  */
 @Slf4j
-@SpringBootTest(classes = HiganbanaApplication.class)
+@SpringBootTest(classes = WebBlogApplication.class)
 public class RedisListenerTest {
 
     @Resource
@@ -25,6 +25,6 @@ public class RedisListenerTest {
 
         //推入缓存
         ValueOperations<String, Object> ops = redisTemplate.opsForValue();
-        ops.set("test1", "哼哼哼，啊啊啊啊啊啊啊啊啊", 5000, TimeUnit.MILLISECONDS);
+        ops.set("tk1", "tv1", 5000, TimeUnit.MILLISECONDS);
     }
 }

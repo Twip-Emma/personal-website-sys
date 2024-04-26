@@ -3,3 +3,17 @@
 /cherry-blossoms/target/
 /gateway/target/
 /higanbana-sorrow/target/
+
+target/
+.idea/
+.mvn/
+application-local.yml
+.asciidoctor
+themes
+fonts
+image
+
+flyway.conf
+mvnw.cmd
+mybatis-generator.properties
+src/main/resources/generatorConfig.xml
