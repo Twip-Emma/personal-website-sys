@@ -1,5 +1,6 @@
 package top.twip.gateway.filter;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -12,6 +13,8 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import top.twip.api.constant.AdminConstants;
 import top.twip.api.constant.CurrencyConstants;
+import top.twip.api.entity.user.WebsiteUserInfo;
+import top.twip.api.exception.BadRequestDataException;
 import top.twip.api.util.TokenRedisHandler;
 
 import javax.annotation.Resource;
@@ -41,7 +44,26 @@ public class AuthorizeFilter implements GlobalFilter {
 
         // 获取请求头中的token
         String token = request.getHeaders().getFirst(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
-        logger.info("请求[路径={},TOKEN={}]", reqUrlPath, token);
+        if (StringUtils.isNotBlank(token)) {
+            WebsiteUserInfo user = null;
+            try {
+                user = tokenRedisHandler.getUserByToken(token);
+            } catch (BadRequestDataException e) {
+                exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
+                return exchange.getResponse().setComplete();
+            }
+            logger.info("请求[用户={}, 账号={}, ID={}, 路径={}]",
+                    user.getNickname(),
+                    user.getCard(),
+                    user.getId(),
+                    reqUrlPath
+            );
+        } else {
+            logger.info("无token请求[路径={}]",
+                    reqUrlPath
+            );
+        }
+
 
         switch (reqUrlPath) {
             // 直接放行的接口

@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import top.twip.api.entity.user.WebsiteUserInfo;
+import top.twip.api.exception.BadRequestDataException;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -29,6 +30,7 @@ public class TokenRedisHandler {
                 .setHeaderParam("typ", "JWT")
                 .setHeaderParam("alg", "HS256")
                 // 载荷
+                .claim("nick-name", userInfo.getNickname())
                 .claim("id", userInfo.getId())
                 .claim("card", userInfo.getCard())
                 .claim("pass", userInfo.getPass())
@@ -107,5 +109,25 @@ public class TokenRedisHandler {
             ex.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 根据token查询用户载荷信息
+     *
+     * @param token token
+     * @return WebsiteUserInfo 用户实体
+     */
+    public WebsiteUserInfo getUserByToken(String token) throws BadRequestDataException {
+        try {
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(SIGN).parseClaimsJws(token);
+            Claims body = claimsJws.getBody();
+            WebsiteUserInfo user = new WebsiteUserInfo();
+            user.setNickname((String) body.get("nick-name"));
+            user.setId((String) body.get("id"));
+            user.setCard((String) body.get("card"));
+            return user;
+        } catch (JwtException ex) {
+            throw new BadRequestDataException("token过期");
+        }
     }
 }

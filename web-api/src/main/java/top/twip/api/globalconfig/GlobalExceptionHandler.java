@@ -1,6 +1,8 @@
 package top.twip.api.globalconfig;
 
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.twip.api.constant.FeignConstants;
@@ -21,13 +23,14 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(Exception.class)
-    private Object handleException(HttpServletRequest request,Exception e){
-        log.error(e.getClass().toString());
-        e.printStackTrace();
+    private Object handleException(HttpServletRequest request, Exception e) {
+        logger.error(e.getMessage());
 
         // 当本次请求是feign调用，则不进入错误处理逻辑
-        if(request.getHeader(FeignConstants.HEADER_NAME.getValue()) != null){
+        if (request.getHeader(FeignConstants.HEADER_NAME.getValue()) != null) {
             return null;
         }
 
