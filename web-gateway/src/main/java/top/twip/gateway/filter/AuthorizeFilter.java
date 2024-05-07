@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.server.ServerWebExchange;
@@ -30,9 +29,6 @@ public class AuthorizeFilter implements GlobalFilter {
     private final Logger logger = LoggerFactory.getLogger(AuthorizeFilter.class);
 
     @Resource
-    private RedisTemplate<String, Object> redisTemplate;
-
-    @Resource
     private TokenRedisHandler tokenRedisHandler;
 
     @Override
@@ -44,26 +40,13 @@ public class AuthorizeFilter implements GlobalFilter {
 
         // 获取请求头中的token
         String token = request.getHeaders().getFirst(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
-        if (StringUtils.isNotBlank(token)) {
-            WebsiteUserInfo user = null;
-            try {
-                user = tokenRedisHandler.getUserByToken(token);
-            } catch (BadRequestDataException e) {
-                exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
-                return exchange.getResponse().setComplete();
-            }
-            logger.info("请求[用户={}, 账号={}, ID={}, 路径={}]",
-                    user.getNickname(),
-                    user.getCard(),
-                    user.getId(),
-                    reqUrlPath
-            );
-        } else {
-            logger.info("无token请求[路径={}]",
-                    reqUrlPath
-            );
-        }
 
+        // 打印日志
+        boolean logging = handleTokenLogging(token, reqUrlPath);
+        if (!logging) {
+            exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
+            return exchange.getResponse().setComplete();
+        }
 
         switch (reqUrlPath) {
             // 直接放行的接口
@@ -107,5 +90,33 @@ public class AuthorizeFilter implements GlobalFilter {
         return path.equals("/blog/blog/user/getalluser") ||
                 path.equals("/blog/api/addsetukey") ||
                 path.equals("/blog/api/deletesetukey");
+    }
+
+    /**
+     * 打印本次请求相关日志，当无法解析时返回false
+     *
+     * @param token      token
+     * @param reqUrlPath 路径
+     */
+    private boolean handleTokenLogging(String token, String reqUrlPath) {
+        if (StringUtils.isNotBlank(token)) {
+            WebsiteUserInfo user;
+            try {
+                user = tokenRedisHandler.getUserByToken(token);
+            } catch (BadRequestDataException e) {
+                return false;
+            }
+            logger.info("请求[用户={}, 账号={}, ID={}, 路径={}]",
+                    user.getNickname(),
+                    user.getCard(),
+                    user.getId(),
+                    reqUrlPath
+            );
+        } else {
+            logger.info("无token请求[路径={}]",
+                    reqUrlPath
+            );
+        }
+        return true;
     }
 }
