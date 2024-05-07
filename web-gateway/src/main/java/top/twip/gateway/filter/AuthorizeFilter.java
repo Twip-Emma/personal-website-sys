@@ -60,6 +60,7 @@ public class AuthorizeFilter implements GlobalFilter {
                 if (AdminConstants.CURRENCY_HEADER_VALUE.getValue().equals(salt)) {
                     return chain.filter(exchange);
                 } else {
+                    logger.warn("弱密钥不通过请求-可能是被盗链[路径={}]", reqUrlPath);
                     exchange.getResponse().setStatusCode((HttpStatus.BAD_GATEWAY));
                 }
             }

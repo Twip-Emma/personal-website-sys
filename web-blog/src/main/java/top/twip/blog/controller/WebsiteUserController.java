@@ -61,7 +61,8 @@ public class WebsiteUserController {
     }
 
     /**
-     * 更新用户信息
+     * 更新用户信息（用户）
+     *
      * @param websiteUserInfo 用户实体
      * @return Object 用户实体
      */
@@ -84,7 +85,7 @@ public class WebsiteUserController {
 
 
     /**
-     * 更新用户信息
+     * 更新用户信息（管理员）
      * @param websiteUserInfo 用户实体
      * @return Object 用户实体
      */
