@@ -6,8 +6,8 @@ package top.twip.api.constant;
  */
 public class NoValueConstants {
     // token的请求头key
-    public final static String TOKEN_HEADER = "token";
+    public static final String TOKEN_HEADER = "token";
 
     // 验证token的索引
-    public final static String INDEX = "card";
+    public static final String INDEX = "card";
 }

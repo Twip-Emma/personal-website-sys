@@ -1,7 +1,5 @@
 package top.twip.api.util;
 
-import org.apache.commons.io.FilenameUtils;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -9,8 +7,11 @@ import java.io.*;
 import java.nio.file.Files;
 
 public class ImageUtil {
+    private static final long MAX_FILE_SIZE = 1024L * 1024; // 1MB
+
     private static final int MAX_COMPRESSION_TIMES = 10;
-    private static final long MAX_FILE_SIZE = 1024 * 1024; // 1MB
+    public ImageUtil() {
+    }
 
     public static FileInputStream compressImage(FileInputStream fis) throws IOException {
         // 将FileInputStream转换为BufferedImage
@@ -52,9 +53,7 @@ public class ImageUtil {
         Files.write(tempFile.toPath(), baos.toByteArray());
 
         // 创建指向临时文件的FileInputStream
-        FileInputStream compressedFis = new FileInputStream(tempFile);
-
         // 返回压缩后的FileInputStream
-        return compressedFis;
+        return new FileInputStream(tempFile);
     }
 }

@@ -8,16 +8,16 @@ import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
 import top.twip.api.entity.file.Constant;
+import top.twip.api.exception.BadRequestDataException;
 
-import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.util.UUID;
 
 /**
  * Description:
  *
- * @author: bright
- * @date:Created in 2020/12/3 17:39
+ * @author bright
+ * @date in 2020/12/3 17:39
  */
 public class QiNiuUtil {
 
@@ -35,20 +35,21 @@ public class QiNiuUtil {
         Auth auth = Auth.create(Constant.accessKey, Constant.secretKey);
         String upToken = null;
         String path = null;
-        if (fileType.equals(Constant.IMAGE)) {
-            upToken = auth.uploadToken(Constant.bucketPictureName);
-            path = Constant.domainPicture;
-        } else if (fileType.equals(Constant.FILE)) {
-            upToken = auth.uploadToken(Constant.bucketFileName);
-            path = Constant.domainFile;
-        } else if (fileType.equals(Constant.MEME)) {
-            upToken = auth.uploadToken(Constant.bucketFileName);
-            path = Constant.domainFile;
+        switch (fileType) {
+            case Constant.IMAGE -> {
+                upToken = auth.uploadToken(Constant.bucketPictureName);
+                path = Constant.domainPicture;
+            }
+            case Constant.FILE, Constant.MEME -> {
+                upToken = auth.uploadToken(Constant.bucketFileName);
+                path = Constant.domainFile;
+            }
+            default -> throw new BadRequestDataException("意外的fileType:" + fileType);
         }
         UUID uuid = UUID.randomUUID();
         Response response = uploadManager.put(
                 file,
-                "user-file/"+ uuid + ".png",
+                "user-file/" + uuid + ".png",
                 upToken,
                 null,
                 null

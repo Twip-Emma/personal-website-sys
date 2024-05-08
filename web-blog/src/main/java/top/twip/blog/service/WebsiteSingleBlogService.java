@@ -3,6 +3,7 @@ package top.twip.blog.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import top.twip.api.constant.PageConstants;
@@ -20,7 +21,9 @@ import top.twip.blog.dao.WebsiteBlogReplyEntityDao;
 import top.twip.blog.dao.WebsiteUserInfoDao;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -123,9 +126,9 @@ public class WebsiteSingleBlogService {
     public List<WebsiteBlogReplyEntity> getReplyListById(String blogId, Integer page, String text) {
         Page<WebsiteBlogReplyEntity> objectPage = new Page<>(page, 10);
         QueryWrapper<WebsiteBlogReplyEntity> wrapper = new QueryWrapper<>();
-        wrapper.eq("article_id", blogId).orderByDesc("ctime");
+        wrapper.eq("article_id", blogId);
 
-        if (text != null && !"".equals(text)) {
+        if (StringUtils.isNotBlank(text)) {
             wrapper.like("content", text);
         }
 
@@ -137,10 +140,12 @@ public class WebsiteSingleBlogService {
         for (WebsiteBlogReplyEntity o : entities) {
             WebsiteUserInfo userInfo = websiteUserInfoDao.selectById(o.getUserId());
             if (userInfo == null) {
-                continue;
+                o.setAvatar(null);
+                o.setNickname("已注销用户");
+            } else {
+                o.setAvatar(userInfo.getAvatar());
+                o.setNickname(userInfo.getNickname());
             }
-            o.setAvatar(userInfo.getAvatar());
-            o.setNickname(userInfo.getNickname());
             resp.add(o);
         }
         return resp;

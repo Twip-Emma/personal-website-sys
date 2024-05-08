@@ -3,9 +3,9 @@ package top.twip.api.entity.file;
 /**
  * Description: 常量类
  *
+ * @author bright
  * @version 1.0:
- * @author: bright
- * @date:Created in 2020/7/3
+ * @date in 2020/7/3
  */
 public class Constant {
     public static final String IMAGE = "image";

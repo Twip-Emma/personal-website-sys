@@ -13,17 +13,17 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class TokenRedisHandler {
 
-    private static final Integer TOKEN_TIME = 1000*60*60; // 有效时间10分钟
-
-    private static final String SIGN = "user";
+    public static final String ADMIN = "admin";
+    private static final Integer TOKEN_TIME = 1000 * 60 * 60; // 有效时间10分钟
 
     private static final String REDIS_KEY_PREFIX = "user_token_"; // redis key前缀
+    private static final String SIGN = "0010";
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
     // 获取token
-    public String getToken(WebsiteUserInfo userInfo){
+    public String getToken(WebsiteUserInfo userInfo) {
         JwtBuilder builder = Jwts.builder();
         String token = builder
                 // 头信息
@@ -34,7 +34,7 @@ public class TokenRedisHandler {
                 .claim("id", userInfo.getId())
                 .claim("card", userInfo.getCard())
                 .claim("pass", userInfo.getPass())
-                .claim("admin", userInfo.getIsadmin())
+                .claim(ADMIN, userInfo.getIsadmin())
                 .setSubject("user-info")
                 .setExpiration(new Date(System.currentTimeMillis() + TOKEN_TIME))
                 // 签名
@@ -74,7 +74,7 @@ public class TokenRedisHandler {
         try {
             Jws<Claims> claimsJws = Jwts.parser().setSigningKey(SIGN).parseClaimsJws(token);
             Claims body = claimsJws.getBody();
-            Integer admin = (Integer) body.get("admin");
+            Integer admin = (Integer) body.get(ADMIN);
             if (admin >= 1) {
                 return true;
             }
@@ -89,7 +89,7 @@ public class TokenRedisHandler {
         try {
             Jws<Claims> claimsJws = Jwts.parser().setSigningKey(SIGN).parseClaimsJws(token);
             Claims body = claimsJws.getBody();
-            Integer admin = (Integer) body.get("admin");
+            Integer admin = (Integer) body.get(ADMIN);
             if (admin == 2) {
                 return true;
             }

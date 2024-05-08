@@ -11,11 +11,11 @@ import top.twip.api.response.BaseData;
 import top.twip.api.response.DataFactory;
 import top.twip.api.response.ListData;
 import top.twip.api.response.SimpleData;
-import top.twip.api.util.TokenHandler;
 import top.twip.blog.service.WebsiteSingleUserService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  * @Author: 七画一只妖
@@ -28,9 +28,6 @@ public class WebsiteUserController {
     @Resource
     private WebsiteSingleUserService websiteSingleUserService;
 
-    @Resource
-    private TokenHandler tokenHandler;
-
     /**
      * 用户登录
      * @param websiteUserInfo 用户实体
@@ -38,7 +35,7 @@ public class WebsiteUserController {
      */
     @PostMapping("/login")
     public Object login(@RequestBody WebsiteUserInfo websiteUserInfo) throws Exception{
-        return DataFactory.success(SimpleData.class, "登录成功力")
+        return Objects.requireNonNull(DataFactory.success(SimpleData.class, "登录成功"))
                 .parseData(websiteSingleUserService.userLogin(
                         websiteUserInfo.getCard(),
                         websiteUserInfo.getPass()
@@ -52,7 +49,7 @@ public class WebsiteUserController {
      */
     @PostMapping("/register")
     public Object register(@RequestBody WebsiteUserInfo websiteUserInfo) throws Exception{
-        return DataFactory.success(SimpleData.class, "注册成功")
+        return Objects.requireNonNull(DataFactory.success(SimpleData.class, "注册成功"))
                 .parseData(websiteSingleUserService.userRegister(
                         websiteUserInfo.getNickname(),
                         websiteUserInfo.getCard(),
@@ -80,7 +77,7 @@ public class WebsiteUserController {
         String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
         WebsiteUserInfo user = websiteSingleUserService.getUserInfo(token);
         user.setToken(token);
-        return DataFactory.success(SimpleData.class, "成功").parseData(user);
+        return Objects.requireNonNull(DataFactory.success(SimpleData.class, "成功")).parseData(user);
     }
 
 
@@ -91,7 +88,7 @@ public class WebsiteUserController {
      */
     @PostMapping("updatealluser")
     public Object updateAllUser(@RequestBody WebsiteUserInfo websiteUserInfo) throws Exception{
-        return DataFactory.success(SimpleData.class, "成功")
+        return Objects.requireNonNull(DataFactory.success(SimpleData.class, "成功"))
                 .parseData(websiteSingleUserService.updateAllUser(websiteUserInfo));
     }
 
@@ -121,34 +118,32 @@ public class WebsiteUserController {
      */
     @GetMapping("/getallavatar")
     public Object getAllAvatar()throws Exception{
-        return DataFactory.success(SimpleData.class, "查询成功")
+        return Objects.requireNonNull(DataFactory.success(SimpleData.class, "查询成功"))
                 .parseData(websiteSingleUserService.getAllAvatar());
     }
 
     /**
      * 获取所有用户
+     *
      * @return Object 用户列表
      */
     @GetMapping("/getalluser")
-    public Object getAllUser(@RequestParam("page")Integer page,
-                             @RequestParam(value = "name", required = false)String name) throws Exception{
-//        return DataFactory.success(ListData.class, "查询成功")
-//                .parseData(websiteSingleUserService.getAllUser(page))
-//                .parseData(websiteSingleUserService.getUserCount());
-        BaseData R = DataFactory.success(ListData.class, "查询成功")
+    public Object getAllUser(@RequestParam("page") Integer page,
+                             @RequestParam(value = "name", required = false) String name) {
+        BaseData resp = Objects.requireNonNull(DataFactory.success(ListData.class, "查询成功"))
                 .parseData(websiteSingleUserService.getAllUser(page, name));
-        if (name != null && !name.isEmpty()){
-            R.parseData(websiteSingleUserService.getUserCount(name));
+        if (name != null && !name.isEmpty()) {
+            resp.parseData(websiteSingleUserService.getUserCount(name));
         } else {
-            R.parseData(websiteSingleUserService.getUserCount(null));
+            resp.parseData(websiteSingleUserService.getUserCount(null));
         }
-        return R;
+        return resp;
     }
 
 
     @GetMapping("getUserCount")
     public Object getUserCount() {
-        return DataFactory.success(SimpleData.class, "查询成功")
+        return Objects.requireNonNull(DataFactory.success(SimpleData.class, "查询成功"))
                 .parseData(websiteSingleUserService.getUserCount(null));
     }
 
@@ -187,7 +182,7 @@ public class WebsiteUserController {
             throw new FileSizeExceededException("上传的文件大小限制为" + FileSizeConstants.AVATAR_MAX_SIZE_NAME);
         }
         String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
-        return DataFactory.success(SimpleData.class, "上传成功")
+        return Objects.requireNonNull(DataFactory.success(SimpleData.class, "上传成功"))
                 .parseData(websiteSingleUserService.updateAvatar(file, token));
     }
 }

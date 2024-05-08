@@ -45,4 +45,7 @@ public class DataFactory {
             }
         };
     }
+
+    public DataFactory() {
+    }
 }

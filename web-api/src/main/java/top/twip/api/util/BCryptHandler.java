@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class BCryptHandler {
-    static final private String SALT = BCrypt.gensalt(10);
+    private static final String SALT = BCrypt.gensalt(10);
 
     // 明文转密文
     public String plaintextToCiphertext(String plaintext){
