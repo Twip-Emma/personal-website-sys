@@ -1,5 +1,7 @@
 package top.twip.blog.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,17 +24,21 @@ import java.util.List;
 @RestController
 @RequestMapping("/blog/api")
 public class ApiController {
+
+    private final Logger logger = LoggerFactory.getLogger(ApiController.class);
     @Resource
     private ApiService apiService;
 
     /**
      * 根据KEY获取图片
-     * @param key KEY
+     *
+     * @param key      KEY
      * @param response 图片
      */
     @GetMapping("/setu")
-    public Object getSetu(@RequestParam("key")String key,
+    public Object getSetu(@RequestParam("key") String key,
                           HttpServletResponse response) {
+        logger.info("[setu查询, 等级=默认, KEY={}]", key);
         try {
             Boolean aBoolean = apiService.checkKey1(key);
             if (aBoolean){
@@ -59,6 +65,7 @@ public class ApiController {
     @GetMapping("/setux")
     public Object getSetux(@RequestParam("key")String key,
                           HttpServletResponse response) throws Exception {
+        logger.info("[setu查询, 等级=X, KEY={}]", key);
         try {
             Boolean aBoolean = apiService.checkKey1(key);
             if (aBoolean){
@@ -78,16 +85,17 @@ public class ApiController {
     }
 
     /**
-     * 获取涩图KEY
+     * 获取setuKEY
+     *
      * @param time KEY使用次数
      * @return Object Object
      */
     @GetMapping("/addsetukey")
-    public Object addSetuKey(@RequestParam(name = "time", required = false)Integer time){
+    public Object addSetuKey(@RequestParam(name = "time", required = false)Integer time) {
+        String key = apiService.addKey(time);
+        logger.info("[setu查询-获取KEY, KEY={}, time={}]", key, time);
         return DataFactory.success(SimpleData.class, "ok")
-                .parseData(apiService.addKey(time));
-//        System.out.println(time);
-//        return null;
+                .parseData(key);
     }
 
     /**
@@ -96,6 +104,7 @@ public class ApiController {
      */
     @GetMapping("/deletesetukey")
     public Object deleteSetuKey(@RequestParam("key")String key){
+        logger.info("[setu查询-删除KEY, KEY={}]", key);
         return DataFactory.success(SimpleData.class, "ok")
                 .parseData(apiService.deleteKey(key));
     }
@@ -106,6 +115,7 @@ public class ApiController {
      */
     @GetMapping("/checksetukey")
     public Object checkSetuKey(@RequestParam("key")String key){
+        logger.info("[setu查询-校验KEY, KEY={}]", key);
         try {
             Boolean aBoolean = apiService.checkKey2(key);
             if (aBoolean){

@@ -2,6 +2,7 @@ package top.twip.blog.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -138,6 +139,24 @@ public class WebsiteSingleUserService {
         WebsiteUserInfo byId = websiteUserInfoDao.selectById(user.getId());
         if (byId == null) {
             throw new DatabaseDataNotFound("数据未找到");
+        }
+        // 参数校验
+        String newNickName = user.getNickname();
+        if (StringUtils.isBlank(newNickName)) {
+            user.setNickname(null);
+        }
+        String newPass = user.getPass();
+        if (StringUtils.isNotBlank(newPass)) {
+            user.setPass(bCryptHandler.plaintextToCiphertext(newPass));
+        }
+        String avatar = user.getAvatar();
+        if (StringUtils.isBlank(avatar)) {
+            user.setAvatar(null);
+        } else {
+            String avatarUrl = "http://q1.qlogo.cn/g?b=qq&nk=" +
+                    avatar +
+                    "&s=640";
+            user.setAvatar(avatarUrl);
         }
         int i = websiteUserInfoDao.updateById(user);
         if (i != 1) {

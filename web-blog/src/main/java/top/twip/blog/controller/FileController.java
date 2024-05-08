@@ -1,5 +1,7 @@
 package top.twip.blog.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.twip.api.constant.CurrencyConstants;
@@ -16,13 +18,14 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/blog/file")
 public class FileController {
+
+    private final Logger logger = LoggerFactory.getLogger(FileController.class);
     @Resource
     private FileService fileService;
 
     @PostMapping(value = "/upload/file")
     public Object fileUpload(MultipartFile file) throws Exception {
-//        return DataFactory.success(SimpleData.class, "上传成功")
-//                .parseData(fileService.upload(file, Constant.FILE, null));
+        logger.info("[文件上传-file]");
         return null;
     }
 
@@ -33,18 +36,15 @@ public class FileController {
     @PostMapping(value = "/upload/image")
     public Object imageUpload(@RequestBody MultipartFile file,
                               HttpServletRequest request) throws Exception {
-        String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
+        logger.info("[文件上传-image]");
         return null;
-//        return DataFactory.success(SimpleData.class, "上传成功")
-//                .parseData(fileService.upload(file, Constant.IMAGE, token));
     }
 
     /**
      * 上传博客配图
-     * @param file
-     * @param request
-     * @return
-     * @throws Exception
+     *
+     * @param file 文件
+     * @throws Exception Exception
      */
     @PostMapping(value = "/upload/uploadBlog")
     public Object uploadBlog(
@@ -52,6 +52,7 @@ public class FileController {
             @RequestPart("blog") WebsiteBlogList blog,
             HttpServletRequest request
     ) throws Exception {
+        logger.info("[文件上传-新增博客插图]");
         String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
         return DataFactory.success(SimpleData.class, "上传成功")
                 .parseData(fileService.uploadBlog(
@@ -65,10 +66,8 @@ public class FileController {
 
     /**
      * 上传素材图片
-     * @param file
-     * @param request
-     * @return
-     * @throws Exception
+     * @param file 文件
+     * @throws Exception Exception
      */
     @PostMapping(value = "/upload/meme")
     public Object uploadMeme(
@@ -76,6 +75,7 @@ public class FileController {
             @RequestPart("title") String title,
             HttpServletRequest request
     ) throws Exception {
+        logger.info("[文件上传-新增meme]");
         String token = request.getHeader(CurrencyConstants.CURRENCY_HEADER_NAME.getValue());
         return Objects.requireNonNull(DataFactory.success(SimpleData.class, "上传成功"))
                 .parseData(fileService.uploadMeme(
