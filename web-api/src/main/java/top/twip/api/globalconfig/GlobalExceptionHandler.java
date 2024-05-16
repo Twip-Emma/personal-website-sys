@@ -28,6 +28,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     private Object handleException(HttpServletRequest request, Exception e) {
         logger.error(e.getMessage());
+        e.printStackTrace();
 
         // 当本次请求是feign调用，则不进入错误处理逻辑
         if (request.getHeader(FeignConstants.HEADER_NAME.getValue()) != null) {
