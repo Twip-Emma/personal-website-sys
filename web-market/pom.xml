@@ -35,15 +35,20 @@
         <!-- 消息队列RabbitMQ（SpringAMQP） -->
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-amqp</artifactId>-->
-<!--            <version>${rabbit.version}</version>-->
-<!--        </dependency>-->
+        <!--            <artifactId>spring-boot-starter-amqp</artifactId>-->
+        <!--            <version>${rabbit.version}</version>-->
+        <!--        </dependency>-->
         <!-- 多个数据源 -->
-<!--        <dependency>-->
-<!--            <groupId>com.baomidou</groupId>-->
-<!--            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>-->
-<!--            <version>3.3.1</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.baomidou</groupId>-->
+        <!--            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>-->
+        <!--            <version>3.3.1</version>-->
+        <!--        </dependency>-->
+        <!-- 定时任务quartz -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
 
         <!-- MySQL驱动 -->
         <dependency>

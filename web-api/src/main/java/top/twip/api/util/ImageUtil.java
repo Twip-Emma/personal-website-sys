@@ -20,9 +20,10 @@ public class ImageUtil {
         // 初始化输出流以便存储压缩后的图片
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        long fileSize = 0;
+        long fileSize = baos.size();
         // 开始压缩循环
-        for (int i = 0; i < MAX_COMPRESSION_TIMES && fileSize < MAX_FILE_SIZE; i++) {
+        int time = 0;
+        while (time < MAX_COMPRESSION_TIMES && fileSize > MAX_FILE_SIZE) {
             // 计算压缩比例
             double scale = 0.5;
 
@@ -45,6 +46,7 @@ public class ImageUtil {
 
             // 用新压缩过的图片替换原来的图片
             originalImage = scaledImage;
+            time++;
         }
 
         // 将压缩后的图片数据转回FileInputStream
