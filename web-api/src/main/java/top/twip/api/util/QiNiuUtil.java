@@ -24,9 +24,9 @@ public class QiNiuUtil {
     /**
      * 将图片上传到七牛云
      */
-    public String upload(FileInputStream file1, String fileType) throws Exception {
+    public String upload(FileInputStream file, String fileType) throws Exception {
         // 压缩图片
-        FileInputStream file = ImageUtil.compressImage(file1);
+//        FileInputStream file = ImageUtil.compressImage(file1);
 
         // zone0华东区域,zone1是华北区域,zone2是华南区域
         Configuration cfg = new Configuration(Zone.zone2());
