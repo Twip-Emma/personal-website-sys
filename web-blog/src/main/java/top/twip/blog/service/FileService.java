@@ -1,5 +1,6 @@
 package top.twip.blog.service;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import top.twip.api.entity.blog.WebsiteBlogList;
@@ -11,6 +12,7 @@ import top.twip.api.enums.FileTypeEnum;
 import top.twip.api.exception.BadRequestDataException;
 import top.twip.api.util.QiNiuUtil;
 import top.twip.api.util.TokenRedisHandler;
+import top.twip.blog.constant.MemeTypeEnum;
 import top.twip.blog.dao.MemeInfoDao;
 import top.twip.blog.dao.WebsiteUserInfoDao;
 
@@ -104,7 +106,8 @@ public class FileService {
     public BaseVO uploadMeme(
             MultipartFile file,
             String token,
-            String title
+            String title,
+            String memeType
     ) throws Exception {
         // 判断是否是管理员
         if (!tokenRedisHandler.isAdmin(token)) {
@@ -131,6 +134,7 @@ public class FileService {
         meme.setImgUrl(fileVO.getDownloadUrl());
         meme.setTitle(title);
         meme.setLikeNum(0);
+        meme.setMemeType(StringUtils.isNotBlank(memeType) ? memeType : MemeTypeEnum.NO_MEME_TYPE.getValue());
         memeInfoDao.insert(meme);
 
         return fileVO;

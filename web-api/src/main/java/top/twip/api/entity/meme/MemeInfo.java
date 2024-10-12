@@ -11,6 +11,7 @@ public class MemeInfo {
     private String imgUrl;
     private Integer likeNum;
     private String title;
+    private String memeType;
     @TableField(fill = FieldFill.INSERT)
     private Long ctime;
     @TableField(fill = FieldFill.INSERT_UPDATE)

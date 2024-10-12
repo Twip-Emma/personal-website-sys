@@ -73,6 +73,7 @@ public class FileController {
     public Object uploadMeme(
             @RequestPart("file") MultipartFile file,
             @RequestPart("title") String title,
+            @RequestPart("memeType") String memeType,
             HttpServletRequest request
     ) throws Exception {
         logger.info("[文件上传-新增meme]");
@@ -81,7 +82,8 @@ public class FileController {
                 .parseData(fileService.uploadMeme(
                         file,
                         token,
-                        title
+                        title,
+                        memeType
                 ));
     }
 }
