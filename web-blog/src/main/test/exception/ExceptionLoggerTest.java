@@ -15,11 +15,11 @@ class ExceptionLoggerTest {
     void exceptionLoggerTest_shouldReturnFail() throws Exception {
         boolean thrown = false;
         try {
-            throw new BadRequestDataException("-测444改代123213码-报错");
+            throw new BadRequestDataException("-测444改441277773213码-报错");
         } catch (BadRequestDataException e) {
             thrown = true;
         }
         assertTrue(thrown);
     }
-    // 测试新增代码3123123
+    // 测试新增代码31231233333
 }
