@@ -15,10 +15,11 @@ class ExceptionLoggerTest {
     void exceptionLoggerTest_shouldReturnFail() throws Exception {
         boolean thrown = false;
         try {
-            throw new BadRequestDataException("这是报错");
+            throw new BadRequestDataException("-测试修改代码-报错");
         } catch (BadRequestDataException e) {
             thrown = true;
         }
         assertTrue(thrown);
     }
+    // 测试新增代码
 }
