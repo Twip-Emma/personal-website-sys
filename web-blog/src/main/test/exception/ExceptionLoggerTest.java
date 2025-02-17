@@ -15,7 +15,7 @@ class ExceptionLoggerTest {
     void exceptionLoggerTest_shouldReturnFail() throws Exception {
         boolean thrown = false;
         try {
-            throw new BadRequestDataException("-测444改441277773213码-报错");
+            throw new BadRequestDataException("-测444改441277773123213码-报错");
         } catch (BadRequestDataException e) {
             thrown = true;
         }
